@@ -26,3 +26,18 @@
   color: var(--c);
   background: color-mix(in srgb, var(--c) 15%, transparent);
 }
+
+.setting-row {
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--hs-border);
+  border-radius: 14px;
+}
+
+.note {
+  padding: 0.5rem 0.65rem;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--hs-sky) 12%, transparent);
+}
+.note.warn {
+  background: color-mix(in srgb, var(--hs-berry) 12%, transparent);
+}

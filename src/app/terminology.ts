@@ -230,6 +230,21 @@ export const TERMS = {
     ],
   },
 
+  reminders: {
+    heading: 'Reminders',
+    toggle: 'Chore reminders',
+    hint: 'Get a notification when a chore with a reminder is coming up.',
+    limit: 'Reminders arrive while Hearthstead is open or running in the background.',
+    iosHint: 'On iPhone, first add Hearthstead to your Home Screen (Share → Add to Home Screen), then turn this on from there.',
+    blocked: 'Notifications are blocked for Hearthstead. Allow them in your browser or phone settings, then try again.',
+    unsupported: "This browser can't show notifications. In-app reminders will still appear while it's open.",
+    test: 'Send a test',
+    testBody: 'Reminders are working!',
+    body: (when: string) => `Due ${when}`,
+    open: 'Open',
+    dismiss: 'Dismiss',
+  },
+
   settings: {
     title: 'Settings',
     dataHeading: 'Backup & Restore',

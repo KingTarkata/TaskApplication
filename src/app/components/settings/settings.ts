@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PlannerStore } from '../../services/planner-store';
 import { serializeAppData } from '../../models/app-data';
+import { ReminderService } from '../../services/reminders';
 import { TERMS } from '../../terminology';
 
 @Component({
@@ -14,6 +15,15 @@ import { TERMS } from '../../terminology';
 export class SettingsComponent {
   t = TERMS;
   private store = inject(PlannerStore);
+  reminders = inject(ReminderService);
+
+  // iPhone/iPad Safari that isn't installed to the Home Screen can't show notifications
+  isIosBrowser =
+    /iPad|iPhone|iPod/.test(navigator.userAgent) && !(navigator as any).standalone;
+
+  toggleReminders(event: Event) {
+    this.reminders.setEnabled((event.target as HTMLInputElement).checked);
+  }
 
   // Export everything as a versioned JSON backup file
   downloadData() {

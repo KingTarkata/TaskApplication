@@ -10,6 +10,39 @@
       </div>
 
       <div class="modal-body">
+        <h3 class="h6 text-muted mb-3">{{ t.reminders.heading }}</h3>
+        <div class="setting-row mb-4">
+          <div class="form-check form-switch mb-1">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              role="switch"
+              id="remindersToggle"
+              [checked]="reminders.enabled()"
+              (change)="toggleReminders($event)"
+            />
+            <label class="form-check-label fw-bold" for="remindersToggle">
+              <i class="bi bi-bell me-1"></i>{{ t.reminders.toggle }}
+            </label>
+          </div>
+          <small class="d-block text-muted">{{ t.reminders.hint }} {{ t.reminders.limit }}</small>
+
+          @if (isIosBrowser) {
+          <small class="d-block mt-2 note">{{ t.reminders.iosHint }}</small>
+          }
+          @if (reminders.enabled() && reminders.permission() === 'denied') {
+          <small class="d-block mt-2 note warn">{{ t.reminders.blocked }}</small>
+          }
+          @if (reminders.permission() === 'unsupported') {
+          <small class="d-block mt-2 note">{{ t.reminders.unsupported }}</small>
+          }
+          @if (reminders.enabled() && reminders.permission() === 'granted') {
+          <button type="button" class="btn btn-sm btn-soft mt-2" (click)="reminders.sendTest()">
+            <i class="bi bi-send me-1"></i>{{ t.reminders.test }}
+          </button>
+          }
+        </div>
+
         <h3 class="h6 text-muted mb-3">{{ t.settings.dataHeading }}</h3>
 
         <div class="d-grid gap-2">
