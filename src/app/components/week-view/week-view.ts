@@ -5,6 +5,8 @@ import { UiStateService } from '../../services/ui-state';
 import { Task, TaskStatus } from '../../models/task.model';
 import { advanceDate } from '../../models/recurrence';
 import { TERMS } from '../../terminology';
+import { MemberFilter } from '../member-filter/member-filter';
+import { initials } from '../../models/member.model';
 
 // 0 = Sunday, 1 = Monday
 const WEEK_STARTS_ON = 0;
@@ -24,7 +26,7 @@ export interface WeekDay {
 @Component({
   selector: 'app-week-view',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MemberFilter],
   templateUrl: './week-view.html',
   styleUrl: './week-view.css',
 })
@@ -110,6 +112,12 @@ export class WeekView {
     return isFinished(task);
   }
 
+  initials = initials;
+
+  memberFor(task: Task) {
+    return this.store.memberFor(task);
+  }
+
   colorFor(task: Task): string {
     return this.store.categoryFor(task).colorClass;
   }
@@ -138,6 +146,7 @@ export class WeekView {
   }
 
   private matches(task: Task, term: string): boolean {
+    if (!this.ui.matchesMember(task)) return false;
     if (!term) return true;
     return (
       task.title.toLowerCase().includes(term) ||

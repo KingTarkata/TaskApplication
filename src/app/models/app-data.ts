@@ -1,5 +1,6 @@
 import { Category } from './category.model';
 import { Task, TaskStatus, generateUUID } from './task.model';
+import { Household, Member } from './member.model';
 import { TERMS } from '../terminology';
 
 // Bump this and add a step to migrate() whenever the stored shape changes
@@ -15,6 +16,9 @@ export interface AppData {
   tasks: Task[];
   categories: Category[];
   profile: Profile;
+  // Only present when synced with a household (not part of backups)
+  members?: Member[];
+  household?: Household | null;
 }
 
 export function defaultAppData(): AppData {
@@ -59,7 +63,12 @@ export function deserializeTask(raw: any): Task {
 }
 
 export function serializeAppData(data: AppData): Record<string, unknown> {
-  return { ...data, version: DATA_VERSION, tasks: data.tasks.map(serializeTask) };
+  return {
+    version: DATA_VERSION,
+    tasks: data.tasks.map(serializeTask),
+    categories: data.categories,
+    profile: data.profile,
+  };
 }
 
 // ---------- Migration ----------

@@ -4,12 +4,13 @@ import { GamificationService } from '../../services/gamification';
 import { UiStateService } from '../../services/ui-state';
 import { Task, TaskStatus } from '../../models/task.model';
 import { TaskCard } from '../task-card/task-card';
+import { MemberFilter } from '../member-filter/member-filter';
 import { TERMS } from '../../terminology';
 
 @Component({
   selector: 'app-task-board',
   standalone: true,
-  imports: [TaskCard],
+  imports: [TaskCard, MemberFilter],
   templateUrl: './task-board.html',
   styleUrl: './task-board.css',
 })
@@ -36,7 +37,7 @@ export class TaskBoard {
     const groups = new Map<TaskStatus, Task[]>(this.columns.map((c) => [c.status, []]));
     for (const task of this.store.tasks()) {
       const group = groups.get(task.status);
-      if (!group) continue;
+      if (!group || !this.ui.matchesMember(task)) continue;
       if (
         term &&
         !task.title.toLowerCase().includes(term) &&

@@ -25,6 +25,9 @@ export interface DataRepository {
 
   /** Replace everything (used by backup restore). */
   replaceAll(data: AppData): Promise<void>;
+
+  /** Stop listening for changes (called when switching to another repository). */
+  dispose?(): void;
 }
 
 /** Defaults to on-device storage; app.config (or a test) can provide another implementation. */

@@ -2,6 +2,7 @@
   <div class="me-auto">
     <h1 class="h3 mb-0">{{ isCurrentWeek() ? t.week.thisWeek : t.week.title }}</h1>
     <p class="text-muted mb-0">{{ rangeLabel() }}</p>
+    <div class="mt-2"><app-member-filter></app-member-filter></div>
   </div>
   <div class="d-flex align-items-center gap-1">
     <button type="button" class="btn btn-soft btn-icon" (click)="previousWeek()" [attr.aria-label]="t.week.previous" [title]="t.week.previous">
@@ -93,6 +94,9 @@
     <button type="button" class="item-body" (click)="edit(item.task)" [disabled]="item.projected">
       <span class="item-title">{{ item.task.title }}</span>
       <span class="item-meta">
+        @if (memberFor(item.task); as member) {
+        <span class="who" [style.--c]="'var(--hs-' + member.color + ')'" [title]="t.assign.assignedTo(member.displayName)">{{ initials(member.displayName) }}</span>
+        }
         @if (item.date) {
         <span>{{ item.date | date : (showDate ? 'EEE MMM d · h:mm a' : 'h:mm a') }}</span>
         }

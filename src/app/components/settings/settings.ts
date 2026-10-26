@@ -3,12 +3,13 @@ import { CommonModule } from '@angular/common';
 import { PlannerStore } from '../../services/planner-store';
 import { serializeAppData } from '../../models/app-data';
 import { ReminderService } from '../../services/reminders';
+import { AccountComponent } from '../account/account';
 import { TERMS } from '../../terminology';
 
 @Component({
   selector: 'app-settings',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, AccountComponent],
   templateUrl: './settings.html',
   styleUrl: './settings.css',
 })

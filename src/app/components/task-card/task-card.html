@@ -27,6 +27,12 @@
   <div class="d-flex flex-wrap gap-1 mt-2">
     <span class="chip chip-dot" [style.--c]="'var(--bs-' + colorClass + ')'">{{ category.name }}</span>
 
+    @if (assignee; as member) {
+    <span class="chip assignee" [style.--c]="'var(--hs-' + member.color + ')'" [title]="t.assign.assignedTo(member.displayName)">
+      <span class="mini-avatar">{{ initials(member.displayName) }}</span>{{ member.displayName }}
+    </span>
+    }
+
     @if (task.recurrence) {
     <span class="chip" [title]="repeatLabel"><i class="bi bi-arrow-repeat"></i>{{ repeatLabel }}</span>
     }

@@ -36,6 +36,7 @@ export class TaskModals implements OnDestroy {
   repeatInterval = 1;
   isHabit = false;
   reminderMinutes: number | null = null;
+  assigneeId: string | null = null;
 
   // Edit state
   editingId: string | null = null;
@@ -89,6 +90,7 @@ export class TaskModals implements OnDestroy {
     this.repeatInterval = task.recurrence?.interval ?? 1;
     this.isHabit = !!task.isHabit;
     this.reminderMinutes = task.reminderMinutes ?? null;
+    this.assigneeId = task.assigneeId ?? null;
   }
 
   resetForm(dueDate?: Date) {
@@ -103,6 +105,7 @@ export class TaskModals implements OnDestroy {
     this.repeatInterval = 1;
     this.isHabit = false;
     this.reminderMinutes = null;
+    this.assigneeId = this.ui.memberFilter(); // default to whoever the board is filtered to
     this.categoryId = this.store.categories()[0]?.id ?? '';
   }
 
@@ -135,6 +138,7 @@ export class TaskModals implements OnDestroy {
         : undefined,
       isHabit: !!this.repeatFreq && this.isHabit,
       reminderMinutes: due ? this.reminderMinutes : null,
+      assigneeId: this.assigneeId,
     };
 
     if (this.editingId) {

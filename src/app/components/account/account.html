@@ -1,0 +1,153 @@
+<h3 class="h6 text-muted mb-3">{{ t.sync.heading }}</h3>
+
+<div class="setting-box mb-4">
+  @switch (sync.status()) {
+  @case ('disabled') {
+  <small class="text-muted">{{ t.sync.notSetUp }}</small>
+  }
+
+  @case ('starting') {
+  <div class="d-flex align-items-center gap-2 text-muted small">
+    <span class="spinner-border spinner-border-sm"></span>…
+  </div>
+  }
+
+  @case ('signed-out') {
+  <p class="small text-muted mb-3">{{ t.sync.pitch }}</p>
+
+  @if (!showEmail()) {
+  <div class="d-grid gap-2">
+    <button type="button" class="btn btn-soft d-flex align-items-center justify-content-center gap-2" (click)="sync.signInWithGoogle()" [disabled]="sync.busy()">
+      <i class="bi bi-google"></i>{{ t.sync.google }}
+    </button>
+    <button type="button" class="btn btn-link btn-sm text-decoration-none" (click)="showEmail.set(true)">
+      <i class="bi bi-envelope me-1"></i>{{ t.sync.emailToggle }}
+    </button>
+  </div>
+  } @else {
+  <form class="d-grid gap-2" (ngSubmit)="submitEmail()">
+    @if (mode() === 'signup') {
+    <input class="form-control" name="name" [(ngModel)]="name" [placeholder]="t.sync.yourName" autocomplete="name" />
+    }
+    <input class="form-control" type="email" name="email" [(ngModel)]="email" [placeholder]="t.sync.email" autocomplete="email" required />
+    <input
+      class="form-control"
+      type="password"
+      name="password"
+      [(ngModel)]="password"
+      [placeholder]="t.sync.password"
+      [attr.autocomplete]="mode() === 'signin' ? 'current-password' : 'new-password'"
+      required
+    />
+    <button type="submit" class="btn btn-success" [disabled]="sync.busy() || !email || !password">
+      {{ mode() === 'signin' ? t.sync.signIn : t.sync.signUp }}
+    </button>
+    <div class="d-flex justify-content-between flex-wrap gap-1">
+      <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none" (click)="toggleMode()">
+        {{ mode() === 'signin' ? t.sync.needAccount : t.sync.haveAccount }}
+      </button>
+      @if (mode() === 'signin') {
+      <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none" (click)="forgot()" [disabled]="!email">
+        {{ t.sync.forgot }}
+      </button>
+      }
+    </div>
+    @if (resetSent()) {
+    <small class="note">{{ t.sync.resetSent }}</small>
+    }
+  </form>
+  }
+  }
+
+  @case ('no-household') {
+  <small class="d-block text-muted mb-3">{{ t.sync.signedInAs(sync.user()?.email || sync.user()?.displayName || '') }}</small>
+
+  <div class="mb-3">
+    <label class="form-label mb-1" for="hhName">{{ t.sync.createHeading }}</label>
+    <div class="d-flex gap-2">
+      <input id="hhName" class="form-control" [(ngModel)]="householdName" [placeholder]="t.sync.householdName" />
+      <button type="button" class="btn btn-success" (click)="sync.createHousehold(householdName)" [disabled]="sync.busy()">{{ t.sync.create }}</button>
+    </div>
+    <small class="text-muted">{{ t.sync.createHint }}</small>
+  </div>
+
+  <div>
+    <label class="form-label mb-1" for="hhCode">{{ t.sync.joinHeading }}</label>
+    <div class="d-flex gap-2">
+      <input
+        id="hhCode"
+        class="form-control code-input"
+        [(ngModel)]="code"
+        [placeholder]="t.sync.code"
+        maxlength="6"
+        autocapitalize="characters"
+        autocomplete="off"
+      />
+      <button type="button" class="btn btn-outline-success" (click)="join()" [disabled]="sync.busy() || code.trim().length !== 6">{{ t.sync.join }}</button>
+    </div>
+    <small class="text-muted d-block">{{ t.sync.joinHint }}</small>
+    @if (store.tasks().length > 0) {
+    <div class="form-check mt-2">
+      <input class="form-check-input" type="checkbox" id="bringChores" [(ngModel)]="bringChores" />
+      <label class="form-check-label small" for="bringChores">{{ t.sync.bringChores(store.tasks().length) }}</label>
+    </div>
+    }
+  </div>
+
+  <button type="button" class="btn btn-link btn-sm p-0 mt-3 text-decoration-none" (click)="sync.signOut()">{{ t.sync.signOut }}</button>
+  }
+
+  @case ('connected') {
+  @let household = sync.household();
+  <div class="d-flex align-items-center justify-content-between mb-2">
+    <div class="fw-bold font-display fs-5">{{ household?.name }}</div>
+    <span class="chip" style="--c: var(--hs-sage)"><i class="bi bi-cloud-check"></i>{{ t.sync.synced }}</span>
+  </div>
+
+  <div class="d-flex flex-wrap gap-2 mb-3" [attr.aria-label]="t.sync.members">
+    @for (member of sync.members(); track member.id) {
+    <span class="member-pill" [style.--c]="'var(--hs-' + member.color + ')'">
+      <span class="avatar">{{ initials(member.displayName) }}</span>
+      {{ member.displayName }}
+      @if (member.id === sync.user()?.uid) {
+      <small class="text-muted">({{ t.sync.you }})</small>
+      }
+    </span>
+    }
+  </div>
+
+  @if (household?.inviteCode; as code) {
+  <div class="invite-box mb-3">
+    <div class="small fw-bold mb-1">{{ t.sync.inviteHeading }}</div>
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+      <code class="invite-code">{{ code }}</code>
+      <button type="button" class="btn btn-sm btn-soft" (click)="copyCode(code)">
+        <i class="bi me-1" [class.bi-clipboard]="!copied()" [class.bi-check2]="copied()"></i>{{ copied() ? t.sync.copied : t.sync.copy }}
+      </button>
+      @if (canShare) {
+      <button type="button" class="btn btn-sm btn-soft" (click)="shareCode(code)"><i class="bi bi-share me-1"></i>{{ t.sync.share }}</button>
+      }
+      <button type="button" class="btn btn-sm btn-link text-decoration-none" (click)="sync.newInviteCode()" [disabled]="sync.busy()">{{ t.sync.newCode }}</button>
+    </div>
+    <small class="text-muted">{{ t.sync.inviteHint }}</small>
+  </div>
+  } @else {
+  <button type="button" class="btn btn-sm btn-soft mb-3" (click)="sync.newInviteCode()" [disabled]="sync.busy()">
+    <i class="bi bi-person-plus me-1"></i>{{ t.sync.inviteHeading }}
+  </button>
+  }
+
+  <div class="d-flex justify-content-between flex-wrap gap-2">
+    <small class="text-muted align-self-center">{{ t.sync.signedInAs(sync.user()?.email || '') }}</small>
+    <div class="d-flex gap-2">
+      <button type="button" class="btn btn-sm btn-soft" (click)="sync.signOut()" [disabled]="sync.busy()">{{ t.sync.signOut }}</button>
+      <button type="button" class="btn btn-sm btn-outline-danger" (click)="leave()" [disabled]="sync.busy()">{{ t.sync.leave }}</button>
+    </div>
+  </div>
+  }
+  }
+
+  @if (sync.error(); as error) {
+  <div class="note warn mt-3 small" role="alert">{{ error }}</div>
+  }
+</div>

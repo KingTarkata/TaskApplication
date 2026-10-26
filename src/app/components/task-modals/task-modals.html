@@ -54,6 +54,22 @@
           </div>
         </div>
 
+        @if (store.isShared()) {
+        <div class="mb-3">
+          <span class="form-label d-block">{{ t.assign.label }}</span>
+          <div class="d-flex flex-wrap gap-2" role="radiogroup" [attr.aria-label]="t.assign.label">
+            <button type="button" role="radio" class="chip chip-select" style="--c: var(--hs-muted)" [class.chip-solid]="!assigneeId" [attr.aria-checked]="!assigneeId" (click)="assigneeId = null">
+              <i class="bi bi-people"></i>{{ t.assign.anyone }}
+            </button>
+            @for (member of store.members(); track member.id) {
+            <button type="button" role="radio" class="chip chip-select" [style.--c]="'var(--hs-' + member.color + ')'" [class.chip-solid]="assigneeId === member.id" [attr.aria-checked]="assigneeId === member.id" (click)="assigneeId = member.id">
+              <i class="bi bi-person-fill"></i>{{ member.displayName }}
+            </button>
+            }
+          </div>
+        </div>
+        }
+
         <div class="row g-3 mb-3">
           <div class="col-sm-7">
             <label class="form-label" for="taskDue">

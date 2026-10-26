@@ -6,6 +6,7 @@ import { UiStateService } from '../../services/ui-state';
 import { TERMS } from '../../terminology';
 import { Task, TaskStatus, SubTask } from '../../models/task.model';
 import { endOfDay } from '../../models/recurrence';
+import { initials } from '../../models/member.model';
 
 // A single task card on the board; buttons and styling adapt to the task's status
 @Component({
@@ -33,6 +34,12 @@ export class TaskCard {
 
   get category() {
     return this.store.categoryFor(this.task);
+  }
+
+  initials = initials;
+
+  get assignee() {
+    return this.store.memberFor(this.task);
   }
 
   get colorClass(): string {

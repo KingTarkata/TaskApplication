@@ -1,6 +1,7 @@
 import { Injectable, computed, inject } from '@angular/core';
 import { PlannerStore } from './planner-store';
 import { Task, TaskStatus } from '../models/task.model';
+import { Member } from '../models/member.model';
 import { TERMS } from '../terminology';
 
 export interface RankStats {
@@ -43,6 +44,11 @@ export function statsFor(harvested: Task[]): RankStats {
   return { xp, level, progress, nextLevelXp: Math.round(nextLevelBaseXp), tasksCompleted: harvested.length };
 }
 
+/** Who gets the XP for a harvested chore: whoever harvested it, else whoever it was assigned to. */
+export function creditedTo(task: Task): string | null {
+  return task.harvestedBy ?? task.assigneeId ?? null;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -51,8 +57,23 @@ export class GamificationService {
 
   readonly harvested = computed(() => this.store.tasks().filter((t) => t.status === TaskStatus.ARCHIVED));
 
-  /** Stats for everything harvested on this homestead. */
-  readonly stats = computed(() => statsFor(this.harvested()));
+  /** Your stats: on one device that's everything; in a household it's what you harvested. */
+  readonly stats = computed(() => {
+    const me = this.store.currentMemberId();
+    const harvested = this.harvested();
+    return statsFor(me ? harvested.filter((t) => creditedTo(t) === me) : harvested);
+  });
+
+  /** Everything harvested by the whole household. */
+  readonly householdStats = computed(() => statsFor(this.harvested()));
+
+  /** Each member's stats, highest XP first. */
+  readonly leaderboard = computed<{ member: Member; stats: RankStats }[]>(() =>
+    this.store
+      .members()
+      .map((member) => ({ member, stats: statsFor(this.harvested().filter((t) => creditedTo(t) === member.id)) }))
+      .sort((a, b) => b.stats.xp - a.stats.xp)
+  );
 
   readonly displayName = computed(() => this.store.profile().displayName);
 

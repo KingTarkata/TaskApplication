@@ -60,3 +60,28 @@
   color: var(--hs-muted);
   font-weight: 700;
 }
+
+.leaderboard li {
+  padding: 0.45rem 0;
+  border-bottom: 1px solid var(--hs-border);
+}
+.leaderboard li.total {
+  border-bottom: 0;
+}
+.rank {
+  width: 1.2rem;
+  color: var(--hs-muted);
+  font-weight: 800;
+}
+.lb-avatar {
+  width: 1.8rem;
+  height: 1.8rem;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: var(--hs-on-accent);
+  background: var(--c);
+}

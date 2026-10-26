@@ -7,6 +7,7 @@ export const STORAGE_KEYS = {
   // Device-only preferences
   theme: 'theme',
   reminders: 'hearthstead_reminders',
+  session: 'hearthstead_session', // signed-in user + household, for fast offline start
   // v1 keys (Directive Zero era); read once for migration and kept as a fallback
   legacyTasks: 'directive_zero_tasks',
   legacyCategories: 'directive_zero_categories',
@@ -46,6 +47,14 @@ export class StorageService {
       localStorage.setItem(key, value);
     } catch (err) {
       console.error(`Failed to save storage key "${key}".`, err);
+    }
+  }
+
+  remove(key: string): void {
+    try {
+      localStorage.removeItem(key);
+    } catch {
+      // Storage unavailable; nothing to remove
     }
   }
 }

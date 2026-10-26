@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GamificationService, RankStats } from '../../services/gamification';
 import { TERMS } from '../../terminology';
+import { initials } from '../../models/member.model';
 
 // Profile modal: name and current stats
 @Component({
@@ -14,6 +15,7 @@ import { TERMS } from '../../terminology';
 export class ProfileComponent {
   t = TERMS;
   gameService = inject(GamificationService);
+  initials = initials;
 
   get stats(): RankStats {
     return this.gameService.stats();

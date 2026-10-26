@@ -13,6 +13,7 @@ import { routes } from './app.routes';
 import { DATA_REPOSITORY } from './data/data-repository';
 import { LocalRepository } from './data/local-repository';
 import { PlannerStore } from './services/planner-store';
+import { SyncService } from './services/sync';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -25,6 +26,11 @@ export const appConfig: ApplicationConfig = {
     }),
     // Data lives on this device for now; a synced repository can replace this later
     { provide: DATA_REPOSITORY, useExisting: LocalRepository },
-    provideAppInitializer(() => inject(PlannerStore).init()),
+    provideAppInitializer(async () => {
+      const store = inject(PlannerStore);
+      const sync = inject(SyncService);
+      await store.init();
+      await sync.init(); // reconnects to a shared household if signed in before
+    }),
   ],
 };

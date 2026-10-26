@@ -68,6 +68,25 @@
         <div class="text-end mt-1">
           <small class="text-muted">{{ stats.xp }} / {{ stats.nextLevelXp }} {{ t.card.xp }}</small>
         </div>
+
+        @if (gameService.leaderboard().length > 1) {
+        <h3 class="h6 text-muted mt-4 mb-2">{{ t.leaderboard.heading }}</h3>
+        <ul class="list-unstyled mb-0 leaderboard">
+          @for (row of gameService.leaderboard(); track row.member.id; let i = $index) {
+          <li class="d-flex align-items-center gap-2" [style.--c]="'var(--hs-' + row.member.color + ')'">
+            <span class="rank">{{ i + 1 }}</span>
+            <span class="lb-avatar">{{ initials(row.member.displayName) }}</span>
+            <span class="flex-grow-1 fw-bold text-truncate">{{ row.member.displayName }}</span>
+            <small class="text-muted">{{ t.profile.level }} {{ row.stats.level }}</small>
+            <span class="fw-bold">{{ row.stats.xp }} {{ t.card.xp }}</span>
+          </li>
+          }
+          <li class="d-flex justify-content-between total">
+            <span class="text-muted">{{ t.leaderboard.total }}</span>
+            <span class="fw-bold">{{ gameService.householdStats().xp }} {{ t.card.xp }}</span>
+          </li>
+        </ul>
+        }
       </div>
 
     </div>

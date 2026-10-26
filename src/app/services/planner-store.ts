@@ -1,5 +1,7 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { DATA_REPOSITORY } from '../data/data-repository';
+import { Subscription } from 'rxjs';
+import { DATA_REPOSITORY, DataRepository } from '../data/data-repository';
+import { Household, Member } from '../models/member.model';
 import { AppData, Profile, defaultAppData, migrate } from '../models/app-data';
 import { Category } from '../models/category.model';
 import { SubTask, Task, TaskStatus, createTask, generateUUID } from '../models/task.model';
@@ -12,32 +14,63 @@ import { TERMS } from '../terminology';
  */
 @Injectable({ providedIn: 'root' })
 export class PlannerStore {
-  private repo = inject(DATA_REPOSITORY);
+  private readonly localRepo = inject(DATA_REPOSITORY);
+  private repo: DataRepository = this.localRepo;
+  private changesSub?: Subscription;
 
   private readonly _tasks = signal<Task[]>([]);
   private readonly _categories = signal<Category[]>(defaultAppData().categories);
   private readonly _profile = signal<Profile>(defaultAppData().profile);
+  private readonly _members = signal<Member[]>([]);
+  private readonly _household = signal<Household | null>(null);
 
   readonly tasks = this._tasks.asReadonly();
   readonly categories = this._categories.asReadonly();
   readonly profile = this._profile.asReadonly();
+  readonly members = this._members.asReadonly();
+  readonly household = this._household.asReadonly();
   readonly ready = signal(false);
 
   /** Who is acting (set once signed in to a household; null on a single device). */
   readonly currentMemberId = signal<string | null>(null);
 
   readonly categoryById = computed(() => new Map(this._categories().map((c) => [c.id, c])));
+  readonly memberById = computed(() => new Map(this._members().map((m) => [m.id, m])));
+  readonly isShared = computed(() => this._household() !== null);
 
+  /** Start with the on-device data. */
   async init(): Promise<void> {
-    this.apply(await this.repo.load());
-    this.repo.externalChanges.subscribe((data) => this.apply(data));
+    await this.useRepository(this.localRepo, null);
+  }
+
+  /** Switch where data lives (e.g. a synced household after signing in, or back to this device). */
+  async useRepository(repo: DataRepository, memberId: string | null): Promise<void> {
+    const data = await repo.load();
+    this.changesSub?.unsubscribe();
+    if (this.repo !== repo) this.repo.dispose?.();
+    this.repo = repo;
+    this.currentMemberId.set(memberId);
+    this.apply(data);
+    this.changesSub = repo.externalChanges.subscribe((d) => this.apply(d));
     this.ready.set(true);
+  }
+
+  /** Go back to the data stored on this device. */
+  useLocal(): Promise<void> {
+    return this.useRepository(this.localRepo, null);
   }
 
   private apply(data: AppData) {
     this._tasks.set(data.tasks);
     this._categories.set(data.categories);
     this._profile.set(data.profile);
+    this._members.set(data.members ?? []);
+    this._household.set(data.household ?? null);
+  }
+
+  /** The on-device data, even while a household is in use (for moving it into a household). */
+  async localSnapshot(): Promise<AppData> {
+    return this.repo === this.localRepo ? this.snapshot() : this.localRepo.load();
   }
 
   snapshot(): AppData {
@@ -53,6 +86,10 @@ export class PlannerStore {
 
   getTask(id: string): Task | undefined {
     return this._tasks().find((t) => t.id === id);
+  }
+
+  memberFor(task: Task): Member | undefined {
+    return task.assigneeId ? this.memberById().get(task.assigneeId) : undefined;
   }
 
   categoryFor(task: Task): Category {
