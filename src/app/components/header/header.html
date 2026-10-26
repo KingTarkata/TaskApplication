@@ -1,0 +1,99 @@
+<div class="d-flex flex-column flex-lg-row justify-content-between align-items-center mb-4 gap-3">
+  <div class="d-flex align-items-center">
+    <img
+      [src]="'/logo-full-' + getLogoThemeSuffix() + '.png'"
+      alt="Directive Zero"
+      style="height: 40px"
+    />
+  </div>
+
+  <div
+    class="input-group flex-grow-1 mx-lg-4 w-100 w-lg-auto order-2 order-lg-1"
+    style="max-width: 450px"
+  >
+    <span class="input-group-text bg-transparent border-secondary text-muted">
+      <i class="bi bi-search"></i>
+    </span>
+    <input
+      type="text"
+      class="form-control border-start-0 border-secondary bg-transparent text-reset"
+      placeholder="Search Directives..."
+      (input)="onSearch($event)"
+      aria-label="Search directives"
+    />
+  </div>
+
+  <div class="d-flex align-items-stretch gap-2 order-1 order-lg-2 text-nowrap">
+    <button
+      class="btn btn-outline-secondary d-flex align-items-center"
+      data-bs-toggle="modal"
+      data-bs-target="#archiveModal"
+      title="Mission Archive"
+    >
+      <i class="bi bi-archive"></i>
+      <span class="d-none d-lg-inline ms-2">Archives</span>
+    </button>
+
+    <div
+      class="d-flex align-items-center border border-secondary rounded px-2 py-1 user-select-none"
+      style="cursor: pointer; min-width: 140px"
+      data-bs-toggle="modal"
+      data-bs-target="#profileModal"
+      title="Click to view full dossier"
+    >
+      <div class="me-2 text-secondary">
+        <i class="bi bi-person-circle fs-4"></i>
+      </div>
+
+      <div class="flex-grow-1" style="line-height: 1">
+        <div class="fw-bold text-uppercase" style="font-size: 0.75rem; letter-spacing: 0.5px">
+          {{ gameService.operativeName }}
+        </div>
+        <div class="d-flex align-items-center mt-1">
+          <small class="text-muted me-2" style="font-size: 0.65rem">
+            LVL {{ gameService.getStats().level }}
+          </small>
+          <div class="progress flex-grow-1" style="height: 4px; width: 60px">
+            <div
+              class="progress-bar bg-success"
+              role="progressbar"
+              [style.width.%]="gameService.getStats().progress"
+            ></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button
+      class="btn btn-outline-secondary d-flex align-items-center"
+      data-bs-toggle="modal"
+      data-bs-target="#settingsModal"
+      title="System Config"
+    >
+      <i class="bi bi-sliders"></i>
+    </button>
+
+    <button
+      class="btn btn-outline-secondary d-flex align-items-center"
+      (click)="themeService.toggleTheme()"
+      title="Toggle theme"
+      aria-label="Toggle theme"
+    >
+      <i
+        class="bi"
+        [class.bi-moon-stars-fill]="themeService.isDarkMode"
+        [class.bi-sun-fill]="!themeService.isDarkMode"
+      ></i>
+    </button>
+
+    <button
+      class="btn btn-success fw-bold d-flex align-items-center"
+      data-bs-toggle="modal"
+      data-bs-target="#addTaskModal"
+      (click)="taskService.setTaskToEdit(null)"
+    >
+      <i class="bi bi-plus-lg"></i>
+      <span class="d-none d-lg-inline ms-2">New Directive</span>
+    </button>
+  </div>
+</div>

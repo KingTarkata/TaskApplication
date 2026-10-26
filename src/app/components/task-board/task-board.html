@@ -1,0 +1,14 @@
+<div class="row">
+  @for (column of columns; track column.status) {
+  <div class="col-md-4">
+    <h6 class="text-uppercase fw-bold {{ column.color }} mb-3 border-bottom pb-2">
+      <i class="bi {{ column.icon }} me-2"></i>{{ column.label }}
+    </h6>
+    @for (task of getTasksByStatus(column.status); track task.id) {
+    <app-task-card [task]="task"></app-task-card>
+    } @empty {
+    <div class="text-muted small fst-italic text-center my-4">{{ column.empty }}</div>
+    }
+  </div>
+  }
+</div>

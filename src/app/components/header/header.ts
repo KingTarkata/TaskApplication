@@ -1,0 +1,29 @@
+import { Component } from '@angular/core';
+import { ThemeService } from '../../services/theme';
+import { TaskService } from '../../services/task.service';
+import { GamificationService } from '../../services/gamification';
+
+@Component({
+  selector: 'app-header',
+  imports: [],
+  templateUrl: './header.html',
+  styleUrl: './header.css',
+})
+export class Header {
+  constructor(
+    public themeService: ThemeService,
+    public taskService: TaskService,
+    public gameService: GamificationService
+  ) {}
+
+  // Displays appropriate logo based on current theme
+  getLogoThemeSuffix(): string {
+    return this.themeService.isDarkMode ? 'light' : 'dark';
+  }
+
+  // Search bar
+  onSearch(event: Event) {
+    const term = (event.target as HTMLInputElement).value;
+    this.taskService.updateSearchTerm(term);
+  }
+}
