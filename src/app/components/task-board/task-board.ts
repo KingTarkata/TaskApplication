@@ -3,6 +3,7 @@ import { TaskService } from '../../services/task.service';
 import { Task, TaskStatus } from '../../models/task.model';
 import { Subscription } from 'rxjs';
 import { TaskCard } from '../task-card/task-card';
+import { TERMS } from '../../terminology';
 
 @Component({
   selector: 'app-task-board',
@@ -16,9 +17,9 @@ export class TaskBoard implements OnDestroy {
 
   // Board columns, in display order
   columns = [
-    { status: TaskStatus.TODO, label: 'To Do', icon: 'bi-circle', color: 'text-secondary', empty: 'No pending directives.' },
-    { status: TaskStatus.IN_PROGRESS, label: 'In Progress', icon: 'bi-play-circle', color: 'text-primary', empty: 'Nothing in progress.' },
-    { status: TaskStatus.DONE, label: 'Completed', icon: 'bi-check-circle', color: 'text-success', empty: 'Nothing completed yet.' },
+    { status: TaskStatus.TODO, label: TERMS.board.columns.todo, icon: TERMS.icons.todo, color: 'text-secondary', empty: TERMS.board.empty.todo },
+    { status: TaskStatus.IN_PROGRESS, label: TERMS.board.columns.inProgress, icon: TERMS.icons.inProgress, color: 'text-primary', empty: TERMS.board.empty.inProgress },
+    { status: TaskStatus.DONE, label: TERMS.board.columns.done, icon: TERMS.icons.done, color: 'text-success', empty: TERMS.board.empty.done },
   ];
 
   searchTerm: string = '';

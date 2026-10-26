@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GamificationService, RankStats } from '../../services/gamification';
+import { TERMS } from '../../terminology';
 
 @Component({
   selector: 'app-profile',
@@ -10,6 +11,7 @@ import { GamificationService, RankStats } from '../../services/gamification';
   styleUrl: './profile.css'
 })
 export class ProfileComponent {
+  t = TERMS;
   
 // Handles "Profile" modal, including user name and current stats
 

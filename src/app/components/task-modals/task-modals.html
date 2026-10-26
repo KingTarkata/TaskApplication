@@ -4,34 +4,38 @@
       <div class="modal-header">
         <h5 class="modal-title">
           @if (showCatManager) {
-          <i class="bi bi-gear-fill me-2"></i>Manage Categories } @else if (isEditing) { Edit
-          Directive } @else { New Directive }
+          <i class="bi bi-gear-fill me-2"></i>{{ t.categories.title }}
+          } @else if (isEditing) {
+          {{ t.taskForm.editTitle }}
+          } @else {
+          {{ t.taskForm.newTitle }}
+          }
         </h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" [attr.aria-label]="t.archive.close"></button>
       </div>
 
       <div class="modal-body">
         @if (!showCatManager) {
         <div class="mb-3">
-          <label class="form-label">Objective Title</label>
+          <label class="form-label">{{ t.taskForm.title }}</label>
           <input
             type="text"
             class="form-control"
             [(ngModel)]="newTaskTitle"
-            placeholder="e.g. Complete API Integration"
+            [placeholder]="t.taskForm.titlePlaceholder"
           />
         </div>
 
         <div class="row mb-3">
           <div class="col-md-6">
             <div class="d-flex justify-content-between align-items-center mb-1">
-              <label class="form-label mb-0">Category</label>
+              <label class="form-label mb-0">{{ t.taskForm.category }}</label>
               <button
                 class="btn btn-sm btn-link text-decoration-none p-0"
                 type="button"
                 (click)="showCatManager = true"
               >
-                <i class="bi bi-gear-fill"></i> Manage Types
+                <i class="bi bi-gear-fill"></i> {{ t.taskForm.manageCategories }}
               </button>
             </div>
             <select class="form-select" [(ngModel)]="newTaskType">
@@ -43,24 +47,24 @@
 
           <div class="col-md-6">
             <label class="form-label mb-1"
-              >Target Date <span class="text-muted small">(Optional)</span></label
+              >{{ t.taskForm.dueDate }} <span class="text-muted small">{{ t.taskForm.optional }}</span></label
             >
             <input type="datetime-local" class="form-control" [(ngModel)]="newTaskDate" />
           </div>
         </div>
 
         <div class="mb-3">
-          <label class="form-label">Briefing / Notes</label>
+          <label class="form-label">{{ t.taskForm.notes }}</label>
           <textarea class="form-control" rows="3" [(ngModel)]="newTaskDesc"></textarea>
         </div>
 
         <div class="mb-3">
-          <label class="form-label">Sub-Directives (Checklist)</label>
+          <label class="form-label">{{ t.taskForm.subtasks }}</label>
           <div class="input-group mb-2">
             <input
               type="text"
               class="form-control"
-              placeholder="Add step..."
+              [placeholder]="t.taskForm.subtaskPlaceholder"
               [(ngModel)]="newSubtaskTitle"
               (keyup.enter)="addSubtask()"
             />
@@ -87,14 +91,14 @@
             type="text"
             class="form-control"
             [(ngModel)]="newCatName"
-            placeholder="New Category Name"
+            [placeholder]="t.categories.namePlaceholder"
           />
           <select class="form-select" style="max-width: 110px" [(ngModel)]="newCatColor">
             @for (color of categoryService.availableColors; track color.value) {
             <option [value]="color.value">{{ color.name }}</option>
             }
           </select>
-          <button class="btn btn-outline-primary" (click)="addNewCategory()">Add</button>
+          <button class="btn btn-outline-primary" (click)="addNewCategory()">{{ t.categories.add }}</button>
         </div>
 
         <ul class="list-group">
@@ -115,7 +119,7 @@
 
         <div class="mt-3 text-end">
           <button class="btn btn-secondary btn-sm" (click)="showCatManager = false">
-            Back to Task
+            {{ t.categories.back }}
           </button>
         </div>
         }
@@ -123,7 +127,7 @@
 
       <div class="modal-footer">
         @if (!showCatManager) {
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ t.taskForm.cancel }}</button>
         <button
           type="button"
           class="btn btn-primary"
@@ -131,7 +135,7 @@
           [disabled]="!newTaskTitle.trim()"
           (click)="saveTask()"
         >
-          @if (isEditing) { Update Directive } @else { Initialize }
+          {{ isEditing ? t.taskForm.update : t.taskForm.create }}
         </button>
         }
       </div>
@@ -143,8 +147,8 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title"><i class="bi bi-archive me-2"></i>Mission Archive</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <h5 class="modal-title"><i class="bi {{ t.icons.archive }} me-2"></i>{{ t.archive.title }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" [attr.aria-label]="t.archive.close"></button>
       </div>
 
       <div class="modal-body">
@@ -167,11 +171,11 @@
 
             @if (task.subtasks && task.subtasks.length > 0) {
             <div class="mb-3 ps-3 border-start">
-              <small class="text-muted d-block mb-1">LOGGED SUB-DIRECTIVES:</small>
+              <small class="text-muted d-block mb-1">{{ t.archive.subtasksHeading }}</small>
               <ul class="list-unstyled mb-0">
                 @for (sub of task.subtasks; track sub.id) {
                 <li class="small text-muted">
-                  <i class="bi bi-check2-square me-1"></i> {{ sub.title }}
+                  <i class="bi {{ t.icons.subtaskDone }} me-1"></i> {{ sub.title }}
                 </li>
                 }
               </ul>
@@ -182,15 +186,15 @@
               <button
                 class="btn btn-sm btn-outline-primary"
                 (click)="updateStatus(task, eTaskStatus.TODO)"
-                title="Restore to To-Do"
+                [title]="t.archive.restoreTitle"
               >
-                <i class="bi bi-arrow-counterclockwise"></i> Restore
+                <i class="bi bi-arrow-counterclockwise"></i> {{ t.archive.restore }}
               </button>
 
               <button
                 class="btn btn-sm btn-outline-danger"
                 (click)="deleteTask(task)"
-                title="Delete Permanently"
+                [title]="t.archive.deleteTitle"
               >
                 <i class="bi bi-trash-fill"></i>
               </button>
@@ -199,13 +203,13 @@
         </div>
         } @empty {
         <div class="text-center py-5 text-muted">
-          <i class="bi bi-inbox display-4 d-block mb-3"></i>
-          <p>Archive is empty. No decommissioned directives found.</p>
+          <i class="bi {{ t.icons.emptyArchive }} display-4 d-block mb-3"></i>
+          <p>{{ t.archive.empty }}</p>
         </div>
         }
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ t.archive.close }}</button>
       </div>
     </div>
   </div>

@@ -2,7 +2,7 @@
   <div class="d-flex align-items-center">
     <img
       [src]="'/logo-full-' + getLogoThemeSuffix() + '.png'"
-      alt="Directive Zero"
+      [alt]="t.app.name"
       style="height: 40px"
     />
   </div>
@@ -17,9 +17,9 @@
     <input
       type="text"
       class="form-control border-start-0 border-secondary bg-transparent text-reset"
-      placeholder="Search Directives..."
+      [placeholder]="t.header.searchPlaceholder"
       (input)="onSearch($event)"
-      aria-label="Search directives"
+      [attr.aria-label]="t.header.searchLabel"
     />
   </div>
 
@@ -28,10 +28,10 @@
       class="btn btn-outline-secondary d-flex align-items-center"
       data-bs-toggle="modal"
       data-bs-target="#archiveModal"
-      title="Mission Archive"
+      [title]="t.header.archiveTitle"
     >
-      <i class="bi bi-archive"></i>
-      <span class="d-none d-lg-inline ms-2">Archives</span>
+      <i class="bi {{ t.icons.archive }}"></i>
+      <span class="d-none d-lg-inline ms-2">{{ t.header.archiveButton }}</span>
     </button>
 
     <div
@@ -39,19 +39,19 @@
       style="cursor: pointer; min-width: 140px"
       data-bs-toggle="modal"
       data-bs-target="#profileModal"
-      title="Click to view full dossier"
+      [title]="t.header.profileTitle"
     >
       <div class="me-2 text-secondary">
-        <i class="bi bi-person-circle fs-4"></i>
+        <i class="bi {{ t.icons.profile }} fs-4"></i>
       </div>
 
       <div class="flex-grow-1" style="line-height: 1">
         <div class="fw-bold text-uppercase" style="font-size: 0.75rem; letter-spacing: 0.5px">
-          {{ gameService.operativeName }}
+          {{ gameService.displayName }}
         </div>
         <div class="d-flex align-items-center mt-1">
           <small class="text-muted me-2" style="font-size: 0.65rem">
-            LVL {{ gameService.getStats().level }}
+            {{ t.header.levelShort }} {{ gameService.getStats().level }}
           </small>
           <div class="progress flex-grow-1" style="height: 4px; width: 60px">
             <div
@@ -68,16 +68,16 @@
       class="btn btn-outline-secondary d-flex align-items-center"
       data-bs-toggle="modal"
       data-bs-target="#settingsModal"
-      title="System Config"
+      [title]="t.header.settingsTitle"
     >
-      <i class="bi bi-sliders"></i>
+      <i class="bi {{ t.icons.settings }}"></i>
     </button>
 
     <button
       class="btn btn-outline-secondary d-flex align-items-center"
       (click)="themeService.toggleTheme()"
-      title="Toggle theme"
-      aria-label="Toggle theme"
+      [title]="t.header.themeToggle"
+      [attr.aria-label]="t.header.themeToggle"
     >
       <i
         class="bi"
@@ -92,8 +92,8 @@
       data-bs-target="#addTaskModal"
       (click)="taskService.setTaskToEdit(null)"
     >
-      <i class="bi bi-plus-lg"></i>
-      <span class="d-none d-lg-inline ms-2">New Directive</span>
+      <i class="bi {{ t.icons.newTask }}"></i>
+      <span class="d-none d-lg-inline ms-2">{{ t.header.newTask }}</span>
     </button>
   </div>
 </div>

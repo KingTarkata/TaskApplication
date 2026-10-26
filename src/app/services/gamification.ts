@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { TaskService } from './task.service';
 import { TaskStatus, Task } from '../models/task.model';
 import { StorageService, STORAGE_KEYS } from './storage';
+import { TERMS } from '../terminology';
 
 export interface RankStats {
   xp: number;
@@ -21,7 +22,7 @@ export class GamificationService {
 
   private readonly LEVEL_CONSTANT = 0.1;
 
-  public operativeName: string = 'Operative';
+  public displayName: string = TERMS.profile.defaultName;
 
   constructor(private taskService: TaskService, private storage: StorageService) {
     this.loadProfile();
@@ -31,12 +32,12 @@ export class GamificationService {
   private loadProfile() {
     const savedName = this.storage.getString(STORAGE_KEYS.codename);
     if (savedName) {
-      this.operativeName = savedName;
+      this.displayName = savedName;
     }
   }
 
   updateName(newName: string) {
-    this.operativeName = newName;
+    this.displayName = newName;
     this.storage.setString(STORAGE_KEYS.codename, newName);
   }
 
@@ -79,11 +80,7 @@ export class GamificationService {
 
   // Give user titles based on level
   getTitle(level: number): string {
-    if (level === 1) return 'Novice';
-    if (level < 5) return 'Apprentice';
-    if (level < 10) return 'Operative';
-    if (level < 20) return 'Specialist';
-    if (level < 50) return 'Elite';
-    return 'Legend';
+    const ranks = TERMS.profile.rankTitles;
+    return (ranks.find((r) => level <= r.maxLevel) ?? ranks[ranks.length - 1]).title;
   }
 }

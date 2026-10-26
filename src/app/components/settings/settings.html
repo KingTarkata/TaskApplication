@@ -1,28 +1,28 @@
 <div class="modal fade" id="settingsModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
-      
+
       <div class="modal-header border-secondary">
         <h5 class="modal-title font-monospace">
-          <i class="bi bi-cpu-fill me-2"></i>SYSTEM_CONFIG
+          <i class="bi {{ t.icons.settingsTitle }} me-2"></i>{{ t.settings.title }}
         </h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" [attr.aria-label]="t.settings.close"></button>
       </div>
 
       <div class="modal-body font-monospace">
-        
+
         <h6 class="text-uppercase text-muted mb-3 border-bottom border-secondary pb-2">
-          Data Exfiltration & Injection
+          {{ t.settings.dataHeading }}
         </h6>
 
         <div class="d-grid gap-3">
-          
+
           <button class="btn btn-outline-success text-start" (click)="downloadData()">
             <div class="d-flex align-items-center">
               <i class="bi bi-cloud-download display-6 me-3"></i>
               <div>
-                <div class="fw-bold">Download Mission Log</div>
-                <small class="text-muted">Export current state to JSON</small>
+                <div class="fw-bold">{{ t.settings.exportTitle }}</div>
+                <small class="text-muted">{{ t.settings.exportSubtitle }}</small>
               </div>
             </div>
           </button>
@@ -31,21 +31,21 @@
             <div class="d-flex align-items-center">
               <i class="bi bi-cloud-upload display-6 me-3"></i>
               <div>
-                <div class="fw-bold">Inject Protocols</div>
-                <small class="text-muted">Restore from backup file</small>
+                <div class="fw-bold">{{ t.settings.importTitle }}</div>
+                <small class="text-muted">{{ t.settings.importSubtitle }}</small>
               </div>
             </div>
           </button>
 
           <input type="file" id="importFile" class="d-none" accept=".json" (change)="onFileSelected($event)">
-        
+
         </div>
 
       </div>
 
       <div class="modal-footer border-secondary">
-        <small class="text-muted me-auto">Directive Zero v1.1</small>
-        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+        <small class="text-muted me-auto">{{ t.app.name }} {{ t.app.version }}</small>
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">{{ t.settings.close }}</button>
       </div>
 
     </div>

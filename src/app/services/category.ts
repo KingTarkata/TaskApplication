@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Category } from '../models/category.model';
 import { generateUUID } from '../models/task.model';
 import { StorageService, STORAGE_KEYS } from './storage';
+import { TERMS } from '../terminology';
 
 @Injectable({
   providedIn: 'root',
@@ -10,14 +11,10 @@ export class CategoryService {
   public categories: Category[] = [];
 
   // Available colors for new categories
-  public availableColors = [
-    { name: 'Blue', value: 'primary' },
-    { name: 'Green', value: 'success' },
-    { name: 'Yellow', value: 'warning' },
-    { name: 'Red', value: 'danger' },
-    { name: 'Cyan', value: 'info' },
-    { name: 'Dark', value: 'secondary' },
-  ];
+  public availableColors = Object.entries(TERMS.categories.colors).map(([value, name]) => ({
+    name,
+    value,
+  }));
 
   constructor(private storage: StorageService) {
     this.loadCategories();
@@ -59,11 +56,7 @@ export class CategoryService {
       this.categories = saved;
     } else {
       // Default categories
-      this.categories = [
-        { id: '1', name: 'Work', colorClass: 'primary' },
-        { id: '2', name: 'Game', colorClass: 'success' },
-        { id: '3', name: 'Hobby', colorClass: 'warning' },
-      ];
+      this.categories = TERMS.categories.defaults.map((c) => ({ ...c }));
       this.saveCategories();
     }
   }

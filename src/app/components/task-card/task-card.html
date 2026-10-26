@@ -17,16 +17,16 @@
           data-bs-toggle="modal"
           data-bs-target="#addTaskModal"
           (click)="onEdit()"
-          title="Edit"
-          aria-label="Edit directive"
+          [title]="t.card.edit"
+          [attr.aria-label]="t.card.editLabel"
         >
           <i class="bi bi-pencil-fill"></i>
         </button>
         <button
           class="btn btn-sm text-danger p-0 border-0 bg-transparent"
           (click)="deleteTask()"
-          title="Delete"
-          aria-label="Delete directive"
+          [title]="t.card.delete"
+          [attr.aria-label]="t.card.deleteLabel"
         >
           <i class="bi bi-x-lg"></i>
         </button>
@@ -58,7 +58,7 @@
         data-bs-toggle="collapse"
         [attr.data-bs-target]="'#collapse-' + task.id"
       >
-        <small class="text-muted" style="font-size: 0.75rem"> PROGRESS: {{ getProgress() }}% </small>
+        <small class="text-muted" style="font-size: 0.75rem"> {{ t.card.progress }}: {{ getProgress() }}% </small>
         <i class="bi bi-chevron-down text-muted" style="font-size: 0.75rem"></i>
       </div>
 
@@ -96,19 +96,19 @@
       class="btn btn-sm btn-light w-100 text-primary border"
       (click)="updateStatus(eTaskStatus.IN_PROGRESS)"
     >
-      Start Protocol <i class="bi bi-arrow-right"></i>
+      {{ t.card.start }} <i class="bi bi-arrow-right"></i>
     </button>
     }
     @case (eTaskStatus.IN_PROGRESS) {
     <div class="d-flex gap-2 mt-2">
       <button class="btn btn-sm btn-light flex-fill border" (click)="updateStatus(eTaskStatus.TODO)">
-        <i class="bi bi-arrow-left"></i> Hold
+        <i class="bi bi-arrow-left"></i> {{ t.card.hold }}
       </button>
       <button
         class="btn btn-sm btn-light flex-fill text-success border"
         (click)="updateStatus(eTaskStatus.DONE)"
       >
-        Complete <i class="bi bi-check-lg"></i>
+        {{ t.card.complete }} <i class="bi bi-check-lg"></i>
       </button>
     </div>
     }
@@ -118,14 +118,14 @@
         class="btn btn-sm btn-light flex-fill border"
         (click)="updateStatus(eTaskStatus.IN_PROGRESS)"
       >
-        <i class="bi bi-arrow-counterclockwise"></i> Re-open
+        <i class="bi bi-arrow-counterclockwise"></i> {{ t.card.reopen }}
       </button>
       <button
         class="btn btn-sm btn-outline-secondary flex-fill border"
         (click)="updateStatus(eTaskStatus.ARCHIVED)"
       >
-        <i class="bi bi-archive"></i> Archive
-        <span class="badge bg-success ms-1"> +{{ gameService.getTaskPotentialXp(task) }} XP </span>
+        <i class="bi {{ t.icons.archive }}"></i> {{ t.card.archive }}
+        <span class="badge bg-success ms-1"> +{{ gameService.getTaskPotentialXp(task) }} {{ t.card.xp }} </span>
       </button>
     </div>
     }

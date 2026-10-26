@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { ThemeService } from '../../services/theme';
 import { TaskService } from '../../services/task.service';
 import { GamificationService } from '../../services/gamification';
+import { TERMS } from '../../terminology';
 
 @Component({
   selector: 'app-header',
@@ -10,6 +11,8 @@ import { GamificationService } from '../../services/gamification';
   styleUrl: './header.css',
 })
 export class Header {
+  t = TERMS;
+
   constructor(
     public themeService: ThemeService,
     public taskService: TaskService,

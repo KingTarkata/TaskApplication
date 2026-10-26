@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { GamificationService } from './gamification';
 import { TaskService } from './task.service';
 import { Task, TaskStatus } from '../models/task.model';
+import { TERMS } from '../terminology';
 
 describe('GamificationService', () => {
   let service: GamificationService;
@@ -46,5 +47,13 @@ describe('GamificationService', () => {
     t.status = TaskStatus.ARCHIVED;
     taskService.addTask(t);
     expect(service.getStats().level).toBe(2);
+  });
+
+  it('should map levels to rank titles from the terminology file', () => {
+    const ranks = TERMS.profile.rankTitles;
+    expect(service.getTitle(1)).toBe(ranks[0].title);
+    expect(service.getTitle(2)).toBe(ranks[1].title);
+    expect(service.getTitle(10)).toBe(ranks[3].title);
+    expect(service.getTitle(1000)).toBe(ranks[ranks.length - 1].title);
   });
 });

@@ -5,6 +5,7 @@ import { TaskService } from '../../services/task.service';
 import { CategoryService } from '../../services/category';
 import { Task, TaskStatus, SubTask, generateUUID } from '../../models/task.model';
 import { Subscription } from 'rxjs';
+import { TERMS } from '../../terminology';
 
 @Component({
   selector: 'app-task-modals',
@@ -15,6 +16,7 @@ import { Subscription } from 'rxjs';
 })
 export class TaskModals implements OnDestroy {
   eTaskStatus = TaskStatus;
+  t = TERMS;
 
   // Variables
   newTaskTitle: string = '';
@@ -161,7 +163,7 @@ export class TaskModals implements OnDestroy {
 
   // Permanently delete an archived task (its XP is removed with it)
   deleteTask(task: Task) {
-    if (confirm(`Permanently delete "${task.title}"? Its XP will be lost.`)) {
+    if (confirm(TERMS.archive.confirmDelete(task.title))) {
       this.taskService.removeTask(task.id);
     }
   }

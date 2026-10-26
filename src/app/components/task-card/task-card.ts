@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { TaskService } from '../../services/task.service';
 import { CategoryService } from '../../services/category';
 import { GamificationService } from '../../services/gamification';
+import { TERMS } from '../../terminology';
 import { Task, TaskStatus, SubTask } from '../../models/task.model';
 
 // A single task card on the board; buttons and styling adapt to the task's status
@@ -17,6 +18,7 @@ export class TaskCard {
   @Input({ required: true }) task!: Task;
 
   eTaskStatus = TaskStatus;
+  t = TERMS;
 
   constructor(
     public taskService: TaskService,
@@ -45,7 +47,7 @@ export class TaskCard {
   }
 
   deleteTask() {
-    if (confirm(`Delete "${this.task.title}"? This cannot be undone.`)) {
+    if (confirm(TERMS.card.confirmDelete(this.task.title))) {
       this.taskService.removeTask(this.task.id);
     }
   }

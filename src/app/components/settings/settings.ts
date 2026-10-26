@@ -4,6 +4,7 @@ import { TaskService } from '../../services/task.service';
 import { CategoryService } from '../../services/category';
 import { GamificationService } from '../../services/gamification';
 import { StorageService, STORAGE_KEYS } from '../../services/storage';
+import { TERMS } from '../../terminology';
 
 @Component({
   selector: 'app-settings',
@@ -13,6 +14,8 @@ import { StorageService, STORAGE_KEYS } from '../../services/storage';
   styleUrl: './settings.css',
 })
 export class SettingsComponent {
+  t = TERMS;
+
   constructor(
     private taskService: TaskService,
     private categoryService: CategoryService,
@@ -30,7 +33,7 @@ export class SettingsComponent {
       tasks: this.taskService.tasks,
       categories: this.categoryService.categories,
       profile: {
-        codename: this.gameService.operativeName,
+        codename: this.gameService.displayName,
         totalXp: stats.xp,
         level: stats.level,
       },
@@ -46,7 +49,7 @@ export class SettingsComponent {
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `directive_zero_backup_${new Date().toISOString().slice(0, 10)}.json`;
+    a.download = `${TERMS.app.backupFilePrefix}_${new Date().toISOString().slice(0, 10)}.json`;
     document.body.appendChild(a);
     a.click();
     a.remove();
@@ -75,20 +78,16 @@ export class SettingsComponent {
 
         // Validate data
         if (!this.isValidBackup(data)) {
-          alert('Error: Corrupt or Invalid Protocol File.');
+          alert(TERMS.settings.invalidFile);
           return;
         }
 
         // Confirm import
-        if (
-          confirm(
-            'WARNING: Importing protocols will overwrite all current data. This process cannot be undone. Proceed?'
-          )
-        ) {
+        if (confirm(TERMS.settings.confirmImport)) {
           this.performSystemRestore(data);
         }
       } catch (err) {
-        alert('Error parsing JSON file.');
+        alert(TERMS.settings.parseError);
         console.error(err);
       }
     };
