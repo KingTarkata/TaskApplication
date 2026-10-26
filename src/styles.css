@@ -430,16 +430,3 @@ h1, h2, h3, h4, h5, h6,
   }
 }
 
-/* ---------- Floating action button (phones) ---------- */
-
-.fab {
-  position: fixed;
-  right: calc(1.25rem + env(safe-area-inset-right));
-  bottom: calc(1.25rem + env(safe-area-inset-bottom));
-  width: 3.5rem;
-  height: 3.5rem;
-  border-radius: 50%;
-  font-size: 1.5rem;
-  box-shadow: var(--hs-shadow-lg);
-  z-index: 1030;
-}

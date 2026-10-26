@@ -50,8 +50,8 @@
   font-size: 0.85rem;
 }
 
-@media (min-width: 1200px) {
-  .w-xl-auto {
+@media (min-width: 1400px) {
+  .w-xxl-auto {
     width: auto !important;
   }
 }
@@ -70,4 +70,27 @@
     width: 2.25rem;
     height: 2.25rem;
   }
+}
+
+.page-nav {
+  gap: 0.2rem;
+  padding: 0.2rem;
+  border-radius: 999px;
+  background: var(--hs-bed);
+}
+.page-nav a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  color: var(--hs-muted);
+  font-weight: 700;
+  font-size: 0.88rem;
+  text-decoration: none;
+}
+.page-nav a.active {
+  background: var(--hs-surface);
+  color: var(--hs-text);
+  box-shadow: var(--hs-shadow);
 }

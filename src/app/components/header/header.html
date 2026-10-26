@@ -1,13 +1,19 @@
 @let stats = gameService.stats();
 <header class="d-flex flex-wrap align-items-center gap-2 gap-md-3 mb-3 mb-md-4">
   <!-- Brand -->
-  <a class="brand d-flex align-items-center gap-2 text-decoration-none me-md-2" href="/" (click)="$event.preventDefault()">
+  <a class="brand d-flex align-items-center gap-2 text-decoration-none" routerLink="/">
     <span class="brand-mark"><i class="bi {{ t.icons.logo }}"></i></span>
     <span class="brand-name font-display">{{ t.app.name }}</span>
   </a>
 
+  <!-- Page switcher (phones use the bottom tab bar instead) -->
+  <nav class="page-nav d-none d-md-flex" [attr.aria-label]="t.nav.main">
+    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"><i class="bi bi-kanban"></i>{{ t.nav.board }}</a>
+    <a routerLink="/week" routerLinkActive="active"><i class="bi bi-calendar-week"></i>{{ t.nav.week }}</a>
+  </nav>
+
   <!-- Search: own row until the screen is wide enough to sit inline -->
-  <div class="search-field order-last order-xl-0 flex-grow-1 w-100 w-xl-auto" style="max-width: 460px">
+  <div class="search-field order-last order-xxl-0 flex-grow-1 w-100 w-xxl-auto" style="max-width: 420px">
     <i class="bi bi-search"></i>
     <input
       type="search"
@@ -21,26 +27,20 @@
   <!-- Actions -->
   <div class="d-flex align-items-center gap-1 gap-sm-2 ms-auto">
     <button
-      class="btn btn-soft btn-icon d-lg-none"
-      data-bs-toggle="modal"
-      data-bs-target="#archiveModal"
+      class="btn btn-soft btn-icon d-none d-md-inline-flex d-lg-none"
+      (click)="open('archiveModal')"
       [title]="t.header.archiveTitle"
       [attr.aria-label]="t.header.archiveTitle"
     >
       <i class="bi {{ t.icons.archive }}"></i>
     </button>
-    <button
-      class="btn btn-soft d-none d-lg-inline-flex align-items-center gap-2"
-      data-bs-toggle="modal"
-      data-bs-target="#archiveModal"
-    >
+    <button class="btn btn-soft d-none d-lg-inline-flex align-items-center gap-2" (click)="open('archiveModal')">
       <i class="bi {{ t.icons.archive }}"></i>{{ t.header.archiveButton }}
     </button>
 
     <button
       class="btn btn-soft btn-icon"
-      data-bs-toggle="modal"
-      data-bs-target="#settingsModal"
+      (click)="open('settingsModal')"
       [title]="t.header.settingsTitle"
       [attr.aria-label]="t.header.settingsTitle"
     >
@@ -58,9 +58,8 @@
 
     <!-- Profile: level ring fills as you approach the next level -->
     <button
-      class="profile-chip d-flex align-items-center gap-2"
-      data-bs-toggle="modal"
-      data-bs-target="#profileModal"
+      class="profile-chip d-none d-md-flex align-items-center gap-2"
+      (click)="open('profileModal')"
       [title]="t.header.profileTitle"
       [attr.aria-label]="t.header.profileTitle"
     >
@@ -70,26 +69,14 @@
       >
         <span class="level-ring-inner">{{ stats.level }}</span>
       </span>
-      <span class="d-none d-md-flex flex-column text-start lh-sm pe-1">
+      <span class="d-none d-lg-flex flex-column text-start lh-sm pe-1">
         <span class="fw-bold text-truncate" style="max-width: 9rem">{{ gameService.displayName() }}</span>
         <small class="text-muted">{{ gameService.getTitle(stats.level) }}</small>
       </span>
     </button>
 
-    <button
-      class="btn btn-success d-none d-md-inline-flex align-items-center gap-2"
-      (click)="ui.newTask()"
-    >
-      <i class="bi {{ t.icons.newTask }}"></i>{{ t.header.newTask }}
+    <button class="btn btn-success d-none d-md-inline-flex align-items-center gap-2" (click)="ui.newTask()">
+      <i class="bi {{ t.icons.newTask }}"></i><span class="d-none d-lg-inline">{{ t.header.newTask }}</span>
     </button>
   </div>
 </header>
-
-<!-- Floating "plant" button on phones -->
-<button
-  class="btn btn-success fab d-md-none d-flex align-items-center justify-content-center"
-  (click)="ui.newTask()"
-  [attr.aria-label]="t.header.newTask"
->
-  <i class="bi {{ t.icons.newTask }}"></i>
-</button>

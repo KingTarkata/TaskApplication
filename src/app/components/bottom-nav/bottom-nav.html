@@ -1,0 +1,17 @@
+<nav class="bottom-nav d-md-none" [attr.aria-label]="t.nav.main">
+  <a class="nav-item" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+    <i class="bi bi-kanban"></i><span>{{ t.nav.board }}</span>
+  </a>
+  <a class="nav-item" routerLink="/week" routerLinkActive="active">
+    <i class="bi bi-calendar-week"></i><span>{{ t.nav.week }}</span>
+  </a>
+  <button type="button" class="nav-plant" (click)="ui.newTask()" [attr.aria-label]="t.header.newTask">
+    <i class="bi {{ t.icons.newTask }}"></i>
+  </button>
+  <button type="button" class="nav-item" (click)="open('archiveModal')">
+    <i class="bi {{ t.icons.archive }}"></i><span>{{ t.nav.harvest }}</span>
+  </button>
+  <button type="button" class="nav-item" (click)="open('profileModal')">
+    <span class="nav-level">{{ gameService.stats().level }}</span><span>{{ t.nav.profile }}</span>
+  </button>
+</nav>

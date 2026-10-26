@@ -1,0 +1,108 @@
+<section class="d-flex flex-wrap align-items-center gap-2 mb-3 mb-md-4">
+  <div class="me-auto">
+    <h1 class="h3 mb-0">{{ isCurrentWeek() ? t.week.thisWeek : t.week.title }}</h1>
+    <p class="text-muted mb-0">{{ rangeLabel() }}</p>
+  </div>
+  <div class="d-flex align-items-center gap-1">
+    <button type="button" class="btn btn-soft btn-icon" (click)="previousWeek()" [attr.aria-label]="t.week.previous" [title]="t.week.previous">
+      <i class="bi bi-chevron-left"></i>
+    </button>
+    <button type="button" class="btn btn-soft" (click)="goToToday()" [disabled]="isCurrentWeek()">{{ t.week.today }}</button>
+    <button type="button" class="btn btn-soft btn-icon" (click)="nextWeek()" [attr.aria-label]="t.week.next" [title]="t.week.next">
+      <i class="bi bi-chevron-right"></i>
+    </button>
+  </div>
+</section>
+
+<!-- Overdue (current week only) -->
+@if (isCurrentWeek() && overdue().length > 0) {
+<section class="week-panel overdue mb-3">
+  <h2 class="h6 d-flex align-items-center gap-2 mb-2">
+    <i class="bi bi-exclamation-circle"></i>{{ t.week.overdue }}
+    <span class="chip">{{ overdue().length }}</span>
+  </h2>
+  <ul class="item-list list-unstyled mb-0">
+    @for (task of overdue(); track task.id) {
+    <ng-container *ngTemplateOutlet="itemTpl; context: { $implicit: { task: task, date: task.dueDate, projected: false }, showDate: true }"></ng-container>
+    }
+  </ul>
+</section>
+}
+
+<!-- The week -->
+<div class="week-grid">
+  @for (day of days(); track day.date.getTime()) {
+  <section class="day" [class.is-today]="day.isToday" [attr.aria-label]="dayLabel(day.date)">
+    <header class="day-header">
+      <div class="day-name">
+        <span class="weekday">{{ day.date | date : 'EEE' }}</span>
+        <span class="date-num">{{ day.date | date : 'd' }}</span>
+        @if (day.isToday) {
+        <span class="chip chip-solid today-chip" style="--c: var(--hs-sage)">{{ t.week.today }}</span>
+        }
+      </div>
+      <button type="button" class="icon-action" (click)="addOn(day.date)" [attr.aria-label]="t.week.addOnDay(dayLabel(day.date))" [title]="t.week.addOnDay(dayLabel(day.date))">
+        <i class="bi bi-plus-lg"></i>
+      </button>
+    </header>
+
+    <ul class="item-list list-unstyled mb-0">
+      @for (item of day.items; track item.task.id + item.date.getTime()) {
+      <ng-container *ngTemplateOutlet="itemTpl; context: { $implicit: item, showDate: false }"></ng-container>
+      } @empty {
+      <li class="empty-day">{{ t.week.nothing }}</li>
+      }
+    </ul>
+  </section>
+  }
+</div>
+
+<!-- Undated chores -->
+@if (anytime().length > 0) {
+<section class="week-panel mt-3">
+  <h2 class="h6 d-flex align-items-center gap-2 mb-2">
+    <i class="bi bi-infinity"></i>{{ t.week.anytime }}
+    <small class="text-muted fw-normal">{{ t.week.anytimeHint }}</small>
+  </h2>
+  <ul class="item-list anytime-list list-unstyled mb-0">
+    @for (task of anytime(); track task.id) {
+    <ng-container *ngTemplateOutlet="itemTpl; context: { $implicit: { task: task, date: null, projected: false }, showDate: false }"></ng-container>
+    }
+  </ul>
+</section>
+}
+
+<!-- One chore row -->
+<ng-template #itemTpl let-item let-showDate="showDate">
+  <li class="item" [class.projected]="item.projected" [class.finished]="!item.projected && isFinished(item.task)" [style.--c]="'var(--bs-' + colorFor(item.task) + ')'">
+    @if (item.projected) {
+    <span class="check projected-check" [title]="t.week.upcoming"><i class="bi bi-arrow-repeat"></i></span>
+    } @else {
+    <button
+      type="button"
+      class="check"
+      [class.checked]="isFinished(item.task)"
+      (click)="toggleDone(item.task)"
+      [disabled]="item.task.status === 'archived'"
+      [attr.aria-label]="isFinished(item.task) ? t.week.markNotDone(item.task.title) : t.week.markDone(item.task.title)"
+      [attr.aria-pressed]="isFinished(item.task)"
+    >
+      <i class="bi bi-check-lg"></i>
+    </button>
+    }
+    <button type="button" class="item-body" (click)="edit(item.task)" [disabled]="item.projected">
+      <span class="item-title">{{ item.task.title }}</span>
+      <span class="item-meta">
+        @if (item.date) {
+        <span>{{ item.date | date : (showDate ? 'EEE MMM d · h:mm a' : 'h:mm a') }}</span>
+        }
+        @if (item.task.recurrence) {
+        <i class="bi bi-arrow-repeat" [title]="t.recurrence.describe(item.task.recurrence.freq, item.task.recurrence.interval)"></i>
+        }
+        @if (item.task.isHabit && item.task.streak) {
+        <span class="streak"><i class="bi bi-fire"></i>{{ item.task.streak }}</span>
+        }
+      </span>
+    </button>
+  </li>
+</ng-template>

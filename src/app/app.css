@@ -1,0 +1,6 @@
+/* Leave room for the phone tab bar */
+@media (max-width: 767.98px) {
+  .app-main {
+    padding-bottom: 5.5rem;
+  }
+}

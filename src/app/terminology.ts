@@ -42,6 +42,32 @@ export const TERMS = {
     newTask: 'Plant a Chore',
   },
 
+  nav: {
+    board: 'Board',
+    week: 'Week',
+    harvest: 'Harvest',
+    profile: 'Me',
+    plant: 'Plant',
+    main: 'Main navigation',
+  },
+
+  week: {
+    title: 'Week',
+    thisWeek: 'This week',
+    range: (start: string, end: string) => `${start} – ${end}`,
+    today: 'Today',
+    previous: 'Previous week',
+    next: 'Next week',
+    overdue: 'Overdue',
+    anytime: 'Anytime',
+    anytimeHint: 'Chores without a date',
+    nothing: 'Nothing planned',
+    addOnDay: (day: string) => `Plant a chore on ${day}`,
+    upcoming: 'Upcoming repeat',
+    markDone: (title: string) => `Mark "${title}" done`,
+    markNotDone: (title: string) => `Mark "${title}" not done`,
+  },
+
   greeting: {
     morning: 'Good morning',
     afternoon: 'Good afternoon',
