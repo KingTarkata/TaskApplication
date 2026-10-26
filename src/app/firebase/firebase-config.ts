@@ -12,7 +12,7 @@ const firebaseConfig = {
 
   apiKey: "AIzaSyAul9bDKoKwXcAHlAqScviCyeIxKFwVTDU",
 
-  authDomain: "taskmanagerapp-4bd42.firebaseapp.com",
+  authDomain: "taskmanagerapp-4bd42.web.com",
 
   projectId: "taskmanagerapp-4bd42",
 
