@@ -1,96 +1,99 @@
-<div class="d-flex flex-column flex-lg-row justify-content-between align-items-center mb-4 gap-3">
-  <div class="d-flex align-items-center gap-2 text-success" style="height: 40px">
-    <i class="bi {{ t.icons.logo }} fs-2"></i>
-    <span class="fs-3 fw-bold" style="color: var(--text-main); letter-spacing: -0.5px">{{ t.app.name }}</span>
-  </div>
+@let stats = gameService.getStats();
+<header class="d-flex flex-wrap align-items-center gap-2 gap-md-3 mb-3 mb-md-4">
+  <!-- Brand -->
+  <a class="brand d-flex align-items-center gap-2 text-decoration-none me-md-2" href="/" (click)="$event.preventDefault()">
+    <span class="brand-mark"><i class="bi {{ t.icons.logo }}"></i></span>
+    <span class="brand-name font-display">{{ t.app.name }}</span>
+  </a>
 
-  <div
-    class="input-group flex-grow-1 mx-lg-4 w-100 w-lg-auto order-2 order-lg-1"
-    style="max-width: 450px"
-  >
-    <span class="input-group-text bg-transparent border-secondary text-muted">
-      <i class="bi bi-search"></i>
-    </span>
+  <!-- Search: own row until the screen is wide enough to sit inline -->
+  <div class="search-field order-last order-xl-0 flex-grow-1 w-100 w-xl-auto" style="max-width: 460px">
+    <i class="bi bi-search"></i>
     <input
-      type="text"
-      class="form-control border-start-0 border-secondary bg-transparent text-reset"
+      type="search"
+      class="form-control"
       [placeholder]="t.header.searchPlaceholder"
       (input)="onSearch($event)"
       [attr.aria-label]="t.header.searchLabel"
     />
   </div>
 
-  <div class="d-flex align-items-stretch gap-2 order-1 order-lg-2 text-nowrap">
+  <!-- Actions -->
+  <div class="d-flex align-items-center gap-1 gap-sm-2 ms-auto">
     <button
-      class="btn btn-outline-secondary d-flex align-items-center"
+      class="btn btn-soft btn-icon d-lg-none"
       data-bs-toggle="modal"
       data-bs-target="#archiveModal"
       [title]="t.header.archiveTitle"
+      [attr.aria-label]="t.header.archiveTitle"
     >
       <i class="bi {{ t.icons.archive }}"></i>
-      <span class="d-none d-lg-inline ms-2">{{ t.header.archiveButton }}</span>
+    </button>
+    <button
+      class="btn btn-soft d-none d-lg-inline-flex align-items-center gap-2"
+      data-bs-toggle="modal"
+      data-bs-target="#archiveModal"
+    >
+      <i class="bi {{ t.icons.archive }}"></i>{{ t.header.archiveButton }}
     </button>
 
-    <div
-      class="d-flex align-items-center border border-secondary rounded px-2 py-1 user-select-none"
-      style="cursor: pointer; min-width: 140px"
-      data-bs-toggle="modal"
-      data-bs-target="#profileModal"
-      [title]="t.header.profileTitle"
-    >
-      <div class="me-2 text-secondary">
-        <i class="bi {{ t.icons.profile }} fs-4"></i>
-      </div>
-
-      <div class="flex-grow-1" style="line-height: 1">
-        <div class="fw-bold text-uppercase" style="font-size: 0.75rem; letter-spacing: 0.5px">
-          {{ gameService.displayName }}
-        </div>
-        <div class="d-flex align-items-center mt-1">
-          <small class="text-muted me-2" style="font-size: 0.65rem">
-            {{ t.header.levelShort }} {{ gameService.getStats().level }}
-          </small>
-          <div class="progress flex-grow-1" style="height: 4px; width: 60px">
-            <div
-              class="progress-bar bg-success"
-              role="progressbar"
-              [style.width.%]="gameService.getStats().progress"
-            ></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <button
-      class="btn btn-outline-secondary d-flex align-items-center"
+      class="btn btn-soft btn-icon"
       data-bs-toggle="modal"
       data-bs-target="#settingsModal"
       [title]="t.header.settingsTitle"
+      [attr.aria-label]="t.header.settingsTitle"
     >
       <i class="bi {{ t.icons.settings }}"></i>
     </button>
 
     <button
-      class="btn btn-outline-secondary d-flex align-items-center"
+      class="btn btn-soft btn-icon"
       (click)="themeService.toggleTheme()"
       [title]="t.header.themeToggle"
       [attr.aria-label]="t.header.themeToggle"
     >
-      <i
-        class="bi"
-        [class.bi-moon-stars-fill]="themeService.isDarkMode"
-        [class.bi-sun-fill]="!themeService.isDarkMode"
-      ></i>
+      <i class="bi" [class.bi-moon-stars-fill]="!themeService.isDarkMode" [class.bi-sun-fill]="themeService.isDarkMode"></i>
+    </button>
+
+    <!-- Profile: level ring fills as you approach the next level -->
+    <button
+      class="profile-chip d-flex align-items-center gap-2"
+      data-bs-toggle="modal"
+      data-bs-target="#profileModal"
+      [title]="t.header.profileTitle"
+      [attr.aria-label]="t.header.profileTitle"
+    >
+      <span
+        class="level-ring"
+        [style.background]="'conic-gradient(var(--hs-sage) ' + stats.progress + '%, var(--hs-surface-2) 0)'"
+      >
+        <span class="level-ring-inner">{{ stats.level }}</span>
+      </span>
+      <span class="d-none d-md-flex flex-column text-start lh-sm pe-1">
+        <span class="fw-bold text-truncate" style="max-width: 9rem">{{ gameService.displayName }}</span>
+        <small class="text-muted">{{ gameService.getTitle(stats.level) }}</small>
+      </span>
     </button>
 
     <button
-      class="btn btn-success fw-bold d-flex align-items-center"
+      class="btn btn-success d-none d-md-inline-flex align-items-center gap-2"
       data-bs-toggle="modal"
       data-bs-target="#addTaskModal"
       (click)="taskService.setTaskToEdit(null)"
     >
-      <i class="bi {{ t.icons.newTask }}"></i>
-      <span class="d-none d-lg-inline ms-2">{{ t.header.newTask }}</span>
+      <i class="bi {{ t.icons.newTask }}"></i>{{ t.header.newTask }}
     </button>
   </div>
-</div>
+</header>
+
+<!-- Floating "plant" button on phones -->
+<button
+  class="btn btn-success fab d-md-none d-flex align-items-center justify-content-center"
+  data-bs-toggle="modal"
+  data-bs-target="#addTaskModal"
+  (click)="taskService.setTaskToEdit(null)"
+  [attr.aria-label]="t.header.newTask"
+>
+  <i class="bi {{ t.icons.newTask }}"></i>
+</button>

@@ -1,14 +1,46 @@
-<div class="row">
+<section class="mb-3 mb-md-4">
+  <h1 class="h3 mb-1">{{ greeting }}, {{ gameService.displayName }}</h1>
+  <p class="text-muted mb-0">{{ summary }}</p>
+</section>
+
+<!-- Column switcher (phones only) -->
+<div class="board-tabs d-md-none mb-3" role="tablist">
   @for (column of columns; track column.status) {
-  <div class="col-md-4">
-    <h6 class="text-uppercase fw-bold {{ column.color }} mb-3 border-bottom pb-2">
-      <i class="bi {{ column.icon }} me-2"></i>{{ column.label }}
-    </h6>
-    @for (task of getTasksByStatus(column.status); track task.id) {
-    <app-task-card [task]="task"></app-task-card>
-    } @empty {
-    <div class="text-muted small fst-italic text-center my-4">{{ column.empty }}</div>
-    }
+  <button
+    type="button"
+    role="tab"
+    class="board-tab"
+    [class.active]="activeStatus === column.status"
+    [attr.aria-selected]="activeStatus === column.status"
+    [style.--c]="'var(--hs-' + column.color + ')'"
+    (click)="activeStatus = column.status"
+  >
+    <i class="bi {{ column.icon }}"></i>
+    <span class="text-truncate">{{ column.tab }}</span>
+    <span class="count">{{ countByStatus(column.status) }}</span>
+  </button>
+  }
+</div>
+
+<div class="row g-3 g-lg-4">
+  @for (column of columns; track column.status) {
+  <div class="col-md-4" [class.d-none]="activeStatus !== column.status" [class.d-md-block]="true">
+    <div class="bed h-100" [style.--c]="'var(--hs-' + column.color + ')'">
+      <div class="bed-header d-none d-md-flex">
+        <span class="bed-icon"><i class="bi {{ column.icon }}"></i></span>
+        <h2 class="h6 mb-0 flex-grow-1">{{ column.label }}</h2>
+        <span class="chip">{{ countByStatus(column.status) }}</span>
+      </div>
+
+      @for (task of getTasksByStatus(column.status); track task.id) {
+      <app-task-card [task]="task"></app-task-card>
+      } @empty {
+      <div class="bed-empty">
+        <i class="bi {{ column.icon }}"></i>
+        <span>{{ column.empty }}</span>
+      </div>
+      }
+    </div>
   </div>
   }
 </div>

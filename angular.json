@@ -25,8 +25,12 @@
             "styles": [
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
               "node_modules/bootstrap-icons/font/bootstrap-icons.css",
-              "node_modules/@fontsource/jetbrains-mono/400.css",
-              "node_modules/@fontsource/jetbrains-mono/700.css",
+              "node_modules/@fontsource/nunito/latin-400.css",
+              "node_modules/@fontsource/nunito/latin-600.css",
+              "node_modules/@fontsource/nunito/latin-700.css",
+              "node_modules/@fontsource/nunito/latin-800.css",
+              "node_modules/@fontsource/fredoka/latin-500.css",
+              "node_modules/@fontsource/fredoka/latin-600.css",
               "src/styles.css"
             ],
             "scripts": ["node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"]
@@ -85,8 +89,12 @@
             "styles": [
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
               "node_modules/bootstrap-icons/font/bootstrap-icons.css",
-              "node_modules/@fontsource/jetbrains-mono/400.css",
-              "node_modules/@fontsource/jetbrains-mono/700.css",
+              "node_modules/@fontsource/nunito/latin-400.css",
+              "node_modules/@fontsource/nunito/latin-600.css",
+              "node_modules/@fontsource/nunito/latin-700.css",
+              "node_modules/@fontsource/nunito/latin-800.css",
+              "node_modules/@fontsource/fredoka/latin-500.css",
+              "node_modules/@fontsource/fredoka/latin-600.css",
               "src/styles.css"
             ],
             "scripts": ["node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"]

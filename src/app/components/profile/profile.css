@@ -1,0 +1,62 @@
+.profile-hero {
+  position: relative;
+  padding: 2rem 1.5rem 1.5rem;
+  background:
+    radial-gradient(400px 200px at 20% 0%, color-mix(in srgb, var(--hs-honey) 22%, transparent), transparent),
+    linear-gradient(160deg, color-mix(in srgb, var(--hs-sage) 24%, var(--hs-surface)), var(--hs-surface));
+}
+
+.hero-ring {
+  width: 6.5rem;
+  height: 6.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.hero-ring-inner {
+  width: 5.5rem;
+  height: 5.5rem;
+  border-radius: 50%;
+  background: var(--hs-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.6rem;
+  color: var(--hs-sage);
+}
+
+.name-input {
+  width: 100%;
+  max-width: 18rem;
+  border: 0;
+  border-bottom: 2px dashed transparent;
+  background: transparent;
+  color: var(--hs-text);
+  text-align: center;
+  font-size: 1.6rem;
+  padding: 0.1rem 0.25rem;
+  transition: border-color 0.15s ease;
+}
+.name-input:hover,
+.name-input:focus {
+  outline: none;
+  border-bottom-color: var(--hs-border);
+}
+
+.stat-tile {
+  background: var(--hs-surface-2);
+  border-radius: 14px;
+  padding: 0.75rem 0.25rem;
+}
+.stat-value {
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+  font-size: 1.5rem;
+  line-height: 1.1;
+}
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--hs-muted);
+  font-weight: 700;
+}

@@ -20,7 +20,7 @@ describe('App', () => {
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    const headings = Array.from(compiled.querySelectorAll('app-task-board h6')).map((h) =>
+    const headings = Array.from(compiled.querySelectorAll('app-task-board .bed-header h2')).map((h) =>
       h.textContent?.trim()
     );
     const { todo, inProgress, done } = TERMS.board.columns;

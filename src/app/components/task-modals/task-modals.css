@@ -1,0 +1,47 @@
+.chip-select {
+  border: 0;
+  font-size: 0.85rem;
+  padding: 0.35rem 0.8rem;
+  cursor: pointer;
+}
+
+.step-list li,
+.plot-row {
+  padding: 0.4rem 0.6rem;
+  border-radius: var(--hs-radius-sm);
+  background: var(--hs-surface-2);
+  margin-bottom: 0.35rem;
+}
+
+.swatch {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  border: 3px solid var(--hs-surface);
+  background: var(--c);
+  box-shadow: 0 0 0 2px transparent;
+  transition: box-shadow 0.15s ease;
+}
+.swatch.selected {
+  box-shadow: 0 0 0 2px var(--c);
+}
+
+.harvest-row {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--hs-border);
+}
+.harvest-row:last-child {
+  border-bottom: 0;
+}
+
+.harvest-icon {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--hs-sage);
+  background: color-mix(in srgb, var(--hs-sage) 15%, transparent);
+}

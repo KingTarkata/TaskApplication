@@ -1,152 +1,445 @@
-/* JetBrains Mono is bundled via @fontsource (see angular.json) so it works offline */
+/* Hearthstead — cozy homestead theme.
+   Fonts (Nunito for text, Fredoka for headings) are bundled via @fontsource in angular.json so they work offline.
+   Theme is driven by <html data-bs-theme="light|dark">; Bootstrap's palette is remapped to ours below,
+   so utilities like .text-success / .bg-primary and the category colors all follow the theme. */
 
-/* Custom color palettes: dark ("retro") is the default, light overrides it */
-:root {
-  --bg-dark: #0d1117;
-  --bg-panel: #161b22;
-  --bg-input: #0d1117;
-  --text-main: #c9d1d9;
-  --text-muted: #8b949e;
-  --text-strong: #ffffff;
+/* ---------- Design tokens ---------- */
 
-  --accent-primary: #58a6ff;
-  --accent-success: #2ea043;
-  --accent-warning: #d29922;
-  --accent-danger: #f85149;
-  --accent-info: #39c5cf;
+:root,
+[data-bs-theme='light'] {
+  /* Surfaces */
+  --hs-bg: #f6f0e4;
+  --hs-bg-accent: #efe5d2;
+  --hs-surface: #fffbf3;
+  --hs-surface-2: #f3eadb;
+  --hs-bed: #ece1cc; /* column "garden bed" */
+  --hs-border: #e2d5bf;
 
-  --border-color: #30363d;
-  --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  /* Text */
+  --hs-text: #3d3027;
+  --hs-muted: #86735f;
+  --hs-on-accent: #ffffff;
+
+  /* Palette (named to match category colors) */
+  --hs-sage: #5b8a4b;
+  --hs-sky: #4a7fa0;
+  --hs-honey: #c98a1c;
+  --hs-berry: #bf4c57;
+  --hs-rain: #3f9896;
+  --hs-stone: #94846f;
+
+  --hs-shadow: 0 1px 2px rgba(80, 55, 30, 0.06), 0 4px 14px rgba(80, 55, 30, 0.08);
+  --hs-shadow-lg: 0 10px 40px rgba(80, 55, 30, 0.18);
+  --hs-radius: 16px;
+  --hs-radius-sm: 10px;
+
+  --hs-rgb-sage: 91, 138, 75;
+  --hs-rgb-sky: 74, 127, 160;
+  --hs-rgb-honey: 201, 138, 28;
+  --hs-rgb-berry: 191, 76, 87;
+  --hs-rgb-rain: 63, 152, 150;
+  --hs-rgb-stone: 148, 132, 111;
 }
 
-[data-theme='light'] {
-  --bg-dark: #f8f9fa;
-  --bg-panel: #ffffff;
-  --bg-input: #ffffff;
-  --text-main: #212529;
-  --text-muted: #6c757d;
-  --text-strong: #000000;
+[data-bs-theme='dark'] {
+  --hs-bg: #1c1814;
+  --hs-bg-accent: #221d17;
+  --hs-surface: #29231c;
+  --hs-surface-2: #332b22;
+  --hs-bed: #231e18;
+  --hs-border: #3e3428;
 
-  --accent-primary: #0d6efd;
-  --accent-success: #198754;
-  --accent-warning: #b8860b;
-  --accent-danger: #dc3545;
-  --accent-info: #0aa2c0;
+  --hs-text: #f1e8d8;
+  --hs-muted: #b4a48e;
+  --hs-on-accent: #1c1814;
 
-  --border-color: #dee2e6;
-  --card-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  --hs-sage: #93c47a;
+  --hs-sky: #86b9d8;
+  --hs-honey: #f0b752;
+  --hs-berry: #e8848b;
+  --hs-rain: #72cbc8;
+  --hs-stone: #ad9e8a;
+
+  --hs-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 14px rgba(0, 0, 0, 0.25);
+  --hs-shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.5);
+
+  --hs-rgb-sage: 147, 196, 122;
+  --hs-rgb-sky: 134, 185, 216;
+  --hs-rgb-honey: 240, 183, 82;
+  --hs-rgb-berry: 232, 132, 139;
+  --hs-rgb-rain: 114, 203, 200;
+  --hs-rgb-stone: 173, 158, 138;
 }
+
+/* Map Bootstrap's palette onto ours (both themes) */
+:root,
+[data-bs-theme='light'],
+[data-bs-theme='dark'] {
+  --bs-body-font-family: 'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --bs-body-bg: var(--hs-bg);
+  --bs-body-color: var(--hs-text);
+  --bs-emphasis-color: var(--hs-text);
+  --bs-secondary-color: var(--hs-muted);
+  --bs-tertiary-bg: var(--hs-surface-2);
+  --bs-border-color: var(--hs-border);
+  --bs-border-radius: var(--hs-radius-sm);
+  --bs-link-color: var(--hs-sage);
+  --bs-link-hover-color: var(--hs-sage);
+
+  --bs-primary: var(--hs-sky);
+  --bs-success: var(--hs-sage);
+  --bs-warning: var(--hs-honey);
+  --bs-danger: var(--hs-berry);
+  --bs-info: var(--hs-rain);
+  --bs-secondary: var(--hs-stone);
+  --bs-primary-rgb: var(--hs-rgb-sky);
+  --bs-success-rgb: var(--hs-rgb-sage);
+  --bs-warning-rgb: var(--hs-rgb-honey);
+  --bs-danger-rgb: var(--hs-rgb-berry);
+  --bs-info-rgb: var(--hs-rgb-rain);
+  --bs-secondary-rgb: var(--hs-rgb-stone);
+}
+
+/* ---------- Base ---------- */
 
 body {
-  font-family: 'JetBrains Mono', monospace;
-  background-color: var(--bg-dark);
-  color: var(--text-main);
+  font-family: var(--bs-body-font-family);
+  background:
+    radial-gradient(1200px 500px at 10% -10%, var(--hs-bg-accent), transparent 70%),
+    var(--hs-bg);
+  background-attachment: fixed;
+  color: var(--hs-text);
+  -webkit-font-smoothing: antialiased;
   /* Keep content clear of phone notches / home indicators when installed */
   padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom)
     env(safe-area-inset-left);
 }
 
-/* Backgrounds */
-.bg-light {
-  background-color: var(--bg-dark) !important;
+h1, h2, h3, h4, h5, h6,
+.font-display {
+  font-family: 'Fredoka', 'Nunito', system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: 0;
 }
 
-/* Task Cards*/
-.card {
-  background-color: var(--bg-panel);
-  border: 1px solid var(--border-color);
-  box-shadow: var(--card-shadow);
+.text-muted,
+.text-secondary {
+  color: var(--hs-muted) !important;
 }
 
-.card-title {
-  color: var(--text-main);
-  font-weight: 700;
-  letter-spacing: -0.5px;
+::selection {
+  background: rgba(var(--hs-rgb-sage), 0.3);
 }
 
-.text-muted {
-  color: var(--text-muted) !important;
+:focus-visible {
+  outline: 3px solid rgba(var(--hs-rgb-sage), 0.5);
+  outline-offset: 2px;
 }
 
-/* Badges */
-.badge {
-  font-weight: 400;
-  border: 1px solid currentColor;
-  background-color: transparent !important;
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+  }
 }
-.badge.bg-primary { color: var(--accent-primary) !important; }
-.badge.bg-success { color: var(--accent-success) !important; }
-.badge.bg-warning { color: var(--accent-warning) !important; }
-.badge.bg-danger { color: var(--accent-danger) !important; }
-.badge.bg-info { color: var(--accent-info) !important; }
-.badge.bg-secondary { color: var(--text-muted) !important; }
 
-/* Buttons */
+/* ---------- Buttons ---------- */
+
 .btn {
-  border-radius: 2px;
-  text-transform: uppercase;
-  font-size: 0.8rem;
-  letter-spacing: 1px;
+  --bs-btn-font-weight: 700;
+  --bs-btn-border-radius: 999px;
+  --bs-btn-padding-x: 1rem;
+  --bs-btn-font-size: 0.9rem;
+  --bs-btn-focus-box-shadow: 0 0 0 0.25rem rgba(var(--hs-rgb-sage), 0.3);
+  transition: transform 0.08s ease, background-color 0.15s ease, color 0.15s ease,
+    border-color 0.15s ease;
+}
+.btn:active {
+  transform: scale(0.97);
+}
+.btn-sm {
+  --bs-btn-font-size: 0.82rem;
+  --bs-btn-padding-x: 0.8rem;
+}
+
+.btn-primary { --c: var(--hs-sky); }
+.btn-success { --c: var(--hs-sage); }
+.btn-danger { --c: var(--hs-berry); }
+.btn-warning { --c: var(--hs-honey); }
+.btn-outline-primary { --c: var(--hs-sky); }
+.btn-outline-success { --c: var(--hs-sage); }
+.btn-outline-danger { --c: var(--hs-berry); }
+.btn-outline-warning { --c: var(--hs-honey); }
+.btn-outline-secondary { --c: var(--hs-muted); }
+
+.btn-primary,
+.btn-success,
+.btn-danger,
+.btn-warning {
+  --bs-btn-color: var(--hs-on-accent);
+  --bs-btn-bg: var(--c);
+  --bs-btn-border-color: var(--c);
+  --bs-btn-hover-color: var(--hs-on-accent);
+  --bs-btn-hover-bg: color-mix(in srgb, var(--c) 86%, #000);
+  --bs-btn-hover-border-color: color-mix(in srgb, var(--c) 86%, #000);
+  --bs-btn-active-color: var(--hs-on-accent);
+  --bs-btn-active-bg: color-mix(in srgb, var(--c) 78%, #000);
+  --bs-btn-active-border-color: color-mix(in srgb, var(--c) 78%, #000);
+  --bs-btn-disabled-color: var(--hs-on-accent);
+  --bs-btn-disabled-bg: var(--c);
+  --bs-btn-disabled-border-color: var(--c);
+}
+
+.btn-outline-primary,
+.btn-outline-success,
+.btn-outline-danger,
+.btn-outline-warning,
+.btn-outline-secondary {
+  --bs-btn-color: var(--c);
+  --bs-btn-border-color: color-mix(in srgb, var(--c) 45%, transparent);
+  --bs-btn-hover-color: var(--c);
+  --bs-btn-hover-bg: color-mix(in srgb, var(--c) 12%, transparent);
+  --bs-btn-hover-border-color: var(--c);
+  --bs-btn-active-color: var(--c);
+  --bs-btn-active-bg: color-mix(in srgb, var(--c) 20%, transparent);
+  --bs-btn-active-border-color: var(--c);
+}
+
+/* Quiet secondary action: soft filled pill */
+.btn-soft {
+  --bs-btn-color: var(--hs-text);
+  --bs-btn-bg: var(--hs-surface-2);
+  --bs-btn-border-color: transparent;
+  --bs-btn-hover-color: var(--hs-text);
+  --bs-btn-hover-bg: color-mix(in srgb, var(--hs-surface-2) 80%, var(--hs-text) 8%);
+  --bs-btn-hover-border-color: transparent;
+  --bs-btn-active-color: var(--hs-text);
+  --bs-btn-active-bg: color-mix(in srgb, var(--hs-surface-2) 70%, var(--hs-text) 14%);
+  --bs-btn-active-border-color: transparent;
+}
+
+/* Round icon-only button */
+.btn-icon {
+  --bs-btn-padding-x: 0;
+  --bs-btn-padding-y: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 1.05rem;
+}
+.btn-icon.btn-sm {
+  width: 2rem;
+  height: 2rem;
+  font-size: 0.9rem;
+}
+
+/* Small inline icon button on cards */
+.icon-action {
+  border: 0;
+  background: transparent;
+  color: var(--hs-muted);
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.icon-action:hover {
+  background: var(--hs-surface-2);
+  color: var(--hs-text);
+}
+.icon-action.danger:hover {
+  color: var(--hs-berry);
+}
+
+/* ---------- Chips (category, due date, XP) ---------- */
+
+.chip {
+  --c: var(--hs-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
   font-weight: 700;
+  line-height: 1.5;
+  color: var(--c);
+  background: color-mix(in srgb, var(--c) 14%, transparent);
+  white-space: nowrap;
+}
+.chip-dot::before {
+  content: '';
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: currentColor;
+}
+.chip-solid {
+  color: var(--hs-on-accent);
+  background: var(--c);
 }
 
-.btn-dark {
-  background-color: var(--accent-success);
-  border: none;
-  color: #000;
-}
-.btn-dark:hover {
-  background-color: #3fb950;
-  box-shadow: 0 0 10px var(--accent-success);
+/* ---------- Surfaces ---------- */
+
+.card {
+  --bs-card-bg: var(--hs-surface);
+  --bs-card-border-color: var(--hs-border);
+  --bs-card-border-radius: var(--hs-radius);
+  --bs-card-inner-border-radius: var(--hs-radius);
+  box-shadow: var(--hs-shadow);
 }
 
-.btn-light {
-  background-color: transparent;
-  border: 1px solid var(--border-color);
-  color: var(--text-main);
-}
-.btn-light:hover {
-  background-color: var(--border-color);
-  color: var(--text-strong);
+.surface {
+  background: var(--hs-surface);
+  border: 1px solid var(--hs-border);
+  border-radius: var(--hs-radius);
+  box-shadow: var(--hs-shadow);
 }
 
-/* Modals */
-.modal-content {
-  background-color: var(--bg-panel);
-  border: 1px solid var(--border-color);
-  color: var(--text-main);
-}
-.modal-header,
-.modal-footer {
-  border-color: var(--border-color);
+.progress {
+  --bs-progress-bg: var(--hs-surface-2);
+  --bs-progress-border-radius: 999px;
+  --bs-progress-bar-bg: var(--hs-sage);
 }
 
-/* Inputs */
+/* ---------- Forms ---------- */
+
 .form-control,
 .form-select {
-  background-color: var(--bg-input);
-  border: 1px solid var(--border-color);
-  color: var(--text-main);
-  border-radius: 0;
+  background-color: var(--hs-surface);
+  border-color: var(--hs-border);
+  color: var(--hs-text);
+  border-radius: var(--hs-radius-sm);
+  padding: 0.55rem 0.8rem;
 }
 .form-control:focus,
 .form-select:focus {
-  background-color: var(--bg-input);
-  color: var(--text-strong);
-  border-color: var(--accent-primary);
-  box-shadow: 0 0 0 0.25rem rgba(88, 166, 255, 0.25);
+  background-color: var(--hs-surface);
+  color: var(--hs-text);
+  border-color: var(--hs-sage);
+  box-shadow: 0 0 0 0.25rem rgba(var(--hs-rgb-sage), 0.2);
 }
-::placeholder {
-  color: var(--text-muted) !important;
-  opacity: 0.7 !important;
+.form-control::placeholder {
+  color: var(--hs-muted);
+  opacity: 0.8;
+}
+.form-label {
+  font-weight: 700;
+  font-size: 0.85rem;
+  margin-bottom: 0.35rem;
+}
+.form-check-input {
+  border-color: var(--hs-border);
+  background-color: var(--hs-surface);
+}
+.form-check-input:checked {
+  background-color: var(--hs-sage);
+  border-color: var(--hs-sage);
+}
+.form-check-input:focus {
+  border-color: var(--hs-sage);
+  box-shadow: 0 0 0 0.25rem rgba(var(--hs-rgb-sage), 0.2);
 }
 
-input:focus::placeholder {
-  color: var(--text-main) !important;
-  opacity: 0.5;
+/* Search box with icon inside */
+.search-field {
+  position: relative;
+}
+.search-field .bi {
+  position: absolute;
+  left: 0.95rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--hs-muted);
+  pointer-events: none;
+}
+.search-field .form-control {
+  padding-left: 2.5rem;
+  border-radius: 999px;
 }
 
-/* Footer */
-footer.border-top {
-  border-color: var(--border-color) !important;
+/* ---------- Modals ---------- */
+
+.modal {
+  --bs-modal-bg: var(--hs-surface);
+  --bs-modal-border-color: var(--hs-border);
+  --bs-modal-border-radius: 20px;
+  --bs-modal-inner-border-radius: 20px;
+  --bs-modal-header-border-color: transparent;
+  --bs-modal-footer-border-color: transparent;
+  --bs-modal-box-shadow: var(--hs-shadow-lg);
+  --bs-modal-color: var(--hs-text);
+}
+.modal-backdrop {
+  --bs-backdrop-bg: #1c1408;
+  --bs-backdrop-opacity: 0.45;
+}
+.modal-header {
+  padding-bottom: 0.5rem;
+}
+.modal-title {
+  font-family: 'Fredoka', 'Nunito', sans-serif;
+  font-weight: 600;
+}
+
+/* On phones, modals become bottom sheets */
+@media (max-width: 575.98px) {
+  .modal-dialog {
+    margin: 0;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-width: none;
+    min-height: 0;
+    height: auto !important; /* override .modal-dialog-scrollable so the sheet hugs the bottom */
+    max-height: 92vh;
+    display: flex;
+    flex-direction: column;
+  }
+  .modal.fade .modal-dialog {
+    transform: translateY(100%);
+    transition: transform 0.25s ease-out;
+  }
+  .modal.show .modal-dialog {
+    transform: none;
+  }
+  .modal-dialog .modal-content {
+    border-radius: 22px 22px 0 0;
+    border-bottom: 0;
+    max-height: 92vh;
+    overflow-y: auto;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .modal-content::before {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 5px;
+    border-radius: 999px;
+    background: var(--hs-border);
+    margin: 10px auto 0;
+  }
+}
+
+/* ---------- Floating action button (phones) ---------- */
+
+.fab {
+  position: fixed;
+  right: calc(1.25rem + env(safe-area-inset-right));
+  bottom: calc(1.25rem + env(safe-area-inset-bottom));
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  box-shadow: var(--hs-shadow-lg);
+  z-index: 1030;
 }

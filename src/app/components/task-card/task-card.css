@@ -1,0 +1,80 @@
+.task-card {
+  position: relative;
+  background: var(--hs-surface);
+  border: 1px solid var(--hs-border);
+  border-radius: var(--hs-radius);
+  box-shadow: var(--hs-shadow);
+  padding: 0.9rem 1rem 1rem 1.15rem;
+  margin-bottom: 0.75rem;
+  overflow: hidden;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+/* Plot color stripe */
+.task-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 5px;
+  background: var(--c);
+}
+@media (hover: hover) {
+  .task-card:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--hs-shadow-lg);
+  }
+}
+
+.task-card.is-done {
+  background: color-mix(in srgb, var(--hs-surface) 70%, transparent);
+  box-shadow: none;
+}
+.task-card.is-done::before {
+  opacity: 0.4;
+}
+.task-card.is-done .task-title {
+  color: var(--hs-muted);
+  text-decoration: line-through;
+}
+
+.task-title {
+  font-family: 'Nunito', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.35;
+  padding-top: 0.2rem;
+}
+
+.card-actions {
+  margin: -0.2rem -0.4rem 0 0;
+}
+
+.task-notes {
+  color: var(--hs-muted);
+  font-size: 0.875rem;
+  white-space: pre-line;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.chip-button {
+  border: 0;
+  cursor: pointer;
+}
+
+.steps li {
+  padding: 0.3rem 0;
+  font-size: 0.9rem;
+}
+.steps label {
+  cursor: pointer;
+}
+
+.xp-pill {
+  font-size: 0.7rem;
+  padding: 0 0.45rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--hs-on-accent) 25%, transparent);
+}

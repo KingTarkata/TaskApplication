@@ -42,11 +42,30 @@ export const TERMS = {
     newTask: 'Plant a Chore',
   },
 
+  greeting: {
+    morning: 'Good morning',
+    afternoon: 'Good afternoon',
+    evening: 'Good evening',
+    summary: (growing: number, planted: number, ready: number) => {
+      const parts = [];
+      if (growing) parts.push(`${growing} growing`);
+      if (planted) parts.push(`${planted} planted`);
+      if (ready) parts.push(`${ready} ready to harvest`);
+      return parts.length ? parts.join(' · ') : 'A quiet day on the homestead. Plant something new!';
+    },
+  },
+
   board: {
     columns: {
       todo: 'Planted',
       inProgress: 'Growing',
       done: 'Ready to Harvest',
+    },
+    // Shorter labels for the phone tab switcher
+    tabs: {
+      todo: 'Planted',
+      inProgress: 'Growing',
+      done: 'Harvest',
     },
     empty: {
       todo: 'Nothing planted yet.',
@@ -60,13 +79,17 @@ export const TERMS = {
     editLabel: 'Edit chore',
     delete: 'Pull up',
     deleteLabel: 'Delete chore',
-    progress: 'GROWTH',
+    progress: 'Growth',
     start: 'Start Tending',
     hold: 'Set Aside',
     complete: 'Done',
     reopen: 'Not Yet',
     archive: 'Harvest',
     xp: 'XP',
+    steps: 'Steps',
+    dueToday: 'Today',
+    dueTomorrow: 'Tomorrow',
+    overdue: 'Overdue',
     confirmDelete: (title: string) => `Pull up "${title}"? This cannot be undone.`,
   },
 
@@ -110,7 +133,7 @@ export const TERMS = {
 
   archive: {
     title: 'Harvest Log',
-    subtasksHeading: 'STEPS COMPLETED:',
+    subtasksHeading: 'Steps completed',
     restore: 'Replant',
     restoreTitle: 'Move back to Planted',
     deleteTitle: 'Delete permanently',
@@ -121,13 +144,15 @@ export const TERMS = {
 
   profile: {
     defaultName: 'Homesteader',
-    namePlaceholder: 'YOUR NAME',
-    level: 'LEVEL',
+    namePlaceholder: 'Your name',
+    level: 'Level',
     statusHeading: 'Homestead Stats',
-    tasksCompleted: 'Chores Harvested',
-    totalXp: 'Total Experience',
-    progressLabel: 'GROWTH TO NEXT LEVEL',
-    close: 'CLOSE',
+    tasksCompleted: 'Harvested',
+    totalXp: 'Total XP',
+    levelStat: 'Level',
+    progressLabel: 'Growth to next level',
+    xpToNext: (xp: number) => `${xp} XP to go`,
+    close: 'Close',
     // Optional flavor line under the level badge; return '' to hide it
     idLine: (_xp: number, _level: number) => '',
     // Level titles, checked in order: first entry whose maxLevel is >= the user's level wins

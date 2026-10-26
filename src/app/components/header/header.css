@@ -1,0 +1,73 @@
+.brand-mark {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  color: var(--hs-on-accent);
+  background: linear-gradient(135deg, var(--hs-sage), color-mix(in srgb, var(--hs-sage) 70%, var(--hs-honey)));
+  box-shadow: var(--hs-shadow);
+}
+
+.brand-name {
+  font-size: 1.5rem;
+  color: var(--hs-text);
+}
+
+.profile-chip {
+  border: 1px solid var(--hs-border);
+  background: var(--hs-surface);
+  color: var(--hs-text);
+  border-radius: 999px;
+  padding: 0.2rem;
+  transition: box-shadow 0.15s ease;
+}
+.profile-chip:hover {
+  box-shadow: var(--hs-shadow);
+}
+
+.level-ring {
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.level-ring-inner {
+  width: 1.7rem;
+  height: 1.7rem;
+  border-radius: 50%;
+  background: var(--hs-surface);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+@media (min-width: 1200px) {
+  .w-xl-auto {
+    width: auto !important;
+  }
+}
+
+/* Fit brand + actions on one row on small phones */
+@media (max-width: 575.98px) {
+  .brand-mark {
+    width: 2.2rem;
+    height: 2.2rem;
+    font-size: 1.1rem;
+  }
+  .brand-name {
+    font-size: 1.3rem;
+  }
+  header .btn-icon {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+}

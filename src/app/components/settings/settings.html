@@ -1,51 +1,41 @@
-<div class="modal fade" id="settingsModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog">
+<div class="modal fade" id="settingsModal" tabindex="-1" aria-hidden="true" aria-labelledby="settingsTitle">
+  <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
 
-      <div class="modal-header border-secondary">
-        <h5 class="modal-title font-monospace">
-          <i class="bi {{ t.icons.settingsTitle }} me-2"></i>{{ t.settings.title }}
-        </h5>
+      <div class="modal-header">
+        <h2 class="modal-title h5" id="settingsTitle">
+          <i class="bi {{ t.icons.settingsTitle }} me-2 text-success"></i>{{ t.settings.title }}
+        </h2>
         <button type="button" class="btn-close" data-bs-dismiss="modal" [attr.aria-label]="t.settings.close"></button>
       </div>
 
-      <div class="modal-body font-monospace">
+      <div class="modal-body">
+        <h3 class="h6 text-muted mb-3">{{ t.settings.dataHeading }}</h3>
 
-        <h6 class="text-uppercase text-muted mb-3 border-bottom border-secondary pb-2">
-          {{ t.settings.dataHeading }}
-        </h6>
-
-        <div class="d-grid gap-3">
-
-          <button class="btn btn-outline-success text-start" (click)="downloadData()">
-            <div class="d-flex align-items-center">
-              <i class="bi bi-cloud-download display-6 me-3"></i>
-              <div>
-                <div class="fw-bold">{{ t.settings.exportTitle }}</div>
-                <small class="text-muted">{{ t.settings.exportSubtitle }}</small>
-              </div>
-            </div>
+        <div class="d-grid gap-2">
+          <button class="action-tile" type="button" (click)="downloadData()">
+            <span class="action-icon" style="--c: var(--hs-sage)"><i class="bi bi-download"></i></span>
+            <span class="text-start">
+              <span class="d-block fw-bold">{{ t.settings.exportTitle }}</span>
+              <small class="text-muted">{{ t.settings.exportSubtitle }}</small>
+            </span>
           </button>
 
-          <button class="btn btn-outline-warning text-start" (click)="triggerImport()">
-            <div class="d-flex align-items-center">
-              <i class="bi bi-cloud-upload display-6 me-3"></i>
-              <div>
-                <div class="fw-bold">{{ t.settings.importTitle }}</div>
-                <small class="text-muted">{{ t.settings.importSubtitle }}</small>
-              </div>
-            </div>
+          <button class="action-tile" type="button" (click)="triggerImport()">
+            <span class="action-icon" style="--c: var(--hs-honey)"><i class="bi bi-upload"></i></span>
+            <span class="text-start">
+              <span class="d-block fw-bold">{{ t.settings.importTitle }}</span>
+              <small class="text-muted">{{ t.settings.importSubtitle }}</small>
+            </span>
           </button>
 
-          <input type="file" id="importFile" class="d-none" accept=".json" (change)="onFileSelected($event)">
-
+          <input type="file" id="importFile" class="d-none" accept=".json,application/json" (change)="onFileSelected($event)">
         </div>
-
       </div>
 
-      <div class="modal-footer border-secondary">
-        <small class="text-muted me-auto">{{ t.app.name }} {{ t.app.version }}</small>
-        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">{{ t.settings.close }}</button>
+      <div class="modal-footer justify-content-between">
+        <small class="text-muted">{{ t.app.name }} {{ t.app.version }}</small>
+        <button type="button" class="btn btn-soft btn-sm" data-bs-dismiss="modal">{{ t.settings.close }}</button>
       </div>
 
     </div>

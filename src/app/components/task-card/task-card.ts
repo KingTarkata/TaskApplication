@@ -34,6 +34,13 @@ export class TaskCard {
     return this.categoryService.getCategoryColor(this.task.type);
   }
 
+  // Whether the step checklist is expanded
+  showSteps = false;
+
+  get completedSteps(): number {
+    return this.task.subtasks.filter((s) => s.completed).length;
+  }
+
   // Progress marker for task based on completed SubTasks
   getProgress(): number {
     if (!this.task.subtasks || this.task.subtasks.length === 0) return 0;
@@ -61,6 +68,18 @@ export class TaskCard {
   isOverdue(): boolean {
     if (!this.task.dueDate || this.isDone) return false;
     return new Date() > this.task.dueDate;
+  }
+
+  // How soon the chore is due, for the due-date chip
+  dueState(): 'overdue' | 'today' | 'tomorrow' | 'later' {
+    if (this.isOverdue()) return 'overdue';
+    const due = this.task.dueDate!;
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+    const dayDiff = Math.floor((due.getTime() - startOfToday.getTime()) / 86_400_000);
+    if (dayDiff <= 0) return 'today';
+    if (dayDiff === 1) return 'tomorrow';
+    return 'later';
   }
 
   onEdit() {

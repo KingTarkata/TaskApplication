@@ -1,77 +1,73 @@
-<div class="modal fade" id="profileModal" tabindex="-1" aria-hidden="true" (shown.bs.modal)="refreshStats()">
-  <div class="modal-dialog">
-    <div class="modal-content">
+<div class="modal fade" id="profileModal" tabindex="-1" aria-hidden="true" (shown.bs.modal)="refreshStats()" [attr.aria-label]="t.header.profileTitle">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content overflow-hidden">
 
-      <div class="modal-body p-0">
-        <div class="bg-secondary text-white p-4 text-center position-relative overflow-hidden">
+      <div class="profile-hero text-center">
+        <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" [attr.aria-label]="t.profile.close"></button>
 
-          <div class="position-absolute top-0 start-0 w-100 h-100 opacity-25"
-               style="background: repeating-linear-gradient(45deg, #000 0, #000 10px, #444 10px, #444 20px);">
-          </div>
-
-          <div class="position-relative" style="z-index: 2;">
-            <div class="display-1 mb-2">
-              <i class="bi {{ t.icons.profileHero }}"></i>
-            </div>
-
-            <div class="d-flex justify-content-center align-items-center mb-3">
-              <div class="position-relative border-bottom border-2 border-white border-opacity-50 pb-1" style="max-width: 300px;">
-                <input type="text"
-                       class="form-control form-control-lg text-center fw-bold text-uppercase bg-transparent border-0 text-white shadow-none p-0"
-                       style="letter-spacing: 2px;"
-                       [value]="gameService.displayName"
-                       (input)="onNameChange($event)"
-                       [placeholder]="t.profile.namePlaceholder">
-                <i class="bi bi-pencil-fill position-absolute top-50 start-100 translate-middle-y ms-2 opacity-50 small"></i>
-              </div>
-            </div>
-
-            <div class="badge bg-warning text-dark fs-6 shadow-sm border border-dark">
-              {{ t.profile.level }} {{ stats.level }} // {{ gameService.getTitle(stats.level) }}
-            </div>
-
-            @if (t.profile.idLine(stats.xp, stats.level); as idLine) {
-            <div class="mt-2 text-white-50 small font-monospace">
-              {{ idLine }}
-            </div>
-            }
+        <div
+          class="hero-ring mx-auto mb-3"
+          [style.background]="'conic-gradient(var(--hs-sage) ' + stats.progress + '%, color-mix(in srgb, var(--hs-text) 10%, transparent) 0)'"
+        >
+          <div class="hero-ring-inner">
+            <i class="bi {{ t.icons.profileHero }}"></i>
           </div>
         </div>
+
+        <input
+          type="text"
+          class="name-input font-display"
+          [value]="gameService.displayName"
+          (input)="onNameChange($event)"
+          [placeholder]="t.profile.namePlaceholder"
+          [attr.aria-label]="t.profile.namePlaceholder"
+        />
+
+        <div class="mt-2">
+          <span class="chip chip-solid" style="--c: var(--hs-honey)">
+            <i class="bi bi-star-fill"></i>{{ t.profile.level }} {{ stats.level }} · {{ gameService.getTitle(stats.level) }}
+          </span>
+        </div>
+
+        @if (t.profile.idLine(stats.xp, stats.level); as idLine) {
+        <div class="mt-2 small text-muted">{{ idLine }}</div>
+        }
       </div>
 
-      <div class="modal-body font-monospace p-4">
+      <div class="modal-body px-4 pb-4">
+        <h3 class="h6 text-muted mb-3">{{ t.profile.statusHeading }}</h3>
 
-        <h6 class="text-uppercase mb-4 border-bottom pb-2 opacity-75">
-          {{ t.profile.statusHeading }}
-        </h6>
-
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <span class="text-muted">{{ t.profile.tasksCompleted }}</span>
-          <span class="fs-5 fw-bold">{{ stats.tasksCompleted }}</span>
-        </div>
-
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <span class="text-muted">{{ t.profile.totalXp }}</span>
-          <span class="fs-5 fw-bold">{{ stats.xp }} {{ t.card.xp }}</span>
-        </div>
-
-        <label class="small text-muted mb-1">{{ t.profile.progressLabel }}</label>
-        <div class="progress" style="height: 15px;">
-          <div class="progress-bar bg-success progress-bar-striped progress-bar-animated"
-               role="progressbar"
-               [style.width.%]="stats.progress">
+        <div class="row g-2 mb-4 text-center">
+          <div class="col-4">
+            <div class="stat-tile">
+              <div class="stat-value">{{ stats.tasksCompleted }}</div>
+              <div class="stat-label">{{ t.profile.tasksCompleted }}</div>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="stat-tile">
+              <div class="stat-value">{{ stats.xp }}</div>
+              <div class="stat-label">{{ t.profile.totalXp }}</div>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="stat-tile">
+              <div class="stat-value">{{ stats.level }}</div>
+              <div class="stat-label">{{ t.profile.levelStat }}</div>
+            </div>
           </div>
         </div>
-        <div class="d-flex justify-content-end mt-1">
-          <small class="text-muted" style="font-size: 0.75rem;">
-            {{ stats.xp }} / {{ stats.nextLevelXp }} {{ t.card.xp }}
-          </small>
+
+        <div class="d-flex justify-content-between align-items-baseline mb-1">
+          <span class="form-label mb-0">{{ t.profile.progressLabel }}</span>
+          <small class="text-muted">{{ t.profile.xpToNext(stats.nextLevelXp - stats.xp) }}</small>
         </div>
-
-      </div>
-
-      <div class="modal-footer justify-content-center">
-        <button type="button" class="btn btn-secondary w-100" data-bs-dismiss="modal">{{ t.profile.close }}</button>
+        <div class="progress" style="height: 12px" role="progressbar" [attr.aria-valuenow]="stats.progress" [attr.aria-label]="t.profile.progressLabel">
+          <div class="progress-bar" [style.width.%]="stats.progress"></div>
+        </div>
+        <div class="text-end mt-1">
+          <small class="text-muted">{{ stats.xp }} / {{ stats.nextLevelXp }} {{ t.card.xp }}</small>
+        </div>
       </div>
 
     </div>
