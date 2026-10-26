@@ -1,8 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 
-import { StorageService, STORAGE_KEYS } from './storage';
-import { TaskService } from './task.service';
-import { Task } from '../models/task.model';
+import { StorageService } from './storage';
+import { PlannerStore } from './planner-store';
 
 describe('StorageService', () => {
   let service: StorageService;
@@ -19,20 +18,12 @@ describe('StorageService', () => {
     expect(service.getJson('bad', [])).toEqual([]);
   });
 
-  it('should not crash TaskService when stored tasks are corrupt', () => {
-    localStorage.setItem(STORAGE_KEYS.tasks, '{not json');
-    const tasks = TestBed.inject(TaskService);
-    expect(tasks.tasks).toEqual([]);
-  });
-
-  it('should round-trip tasks with real Date objects', () => {
-    const due = new Date(2030, 5, 1, 9, 30);
-    TestBed.inject(TaskService).addTask(new Task('Persist me', 'Work', 'notes', due));
-
-    TestBed.resetTestingModule();
-    const reloaded = TestBed.inject(TaskService);
-    expect(reloaded.tasks.length).toBe(1);
-    expect(reloaded.tasks[0].dueDate instanceof Date).toBeTrue();
-    expect(reloaded.tasks[0].dueDate?.getTime()).toBe(due.getTime());
+  it('should not crash the app when stored data is corrupt', async () => {
+    localStorage.setItem('hearthstead_data', '{not json');
+    localStorage.setItem('directive_zero_tasks', '{also bad');
+    const store = TestBed.inject(PlannerStore);
+    await store.init();
+    expect(store.tasks()).toEqual([]);
+    expect(store.categories().length).toBeGreaterThan(0);
   });
 });

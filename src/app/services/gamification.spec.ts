@@ -1,52 +1,47 @@
 import { TestBed } from '@angular/core/testing';
 
-import { GamificationService } from './gamification';
-import { TaskService } from './task.service';
-import { Task, TaskStatus } from '../models/task.model';
+import { GamificationService, XP_RULES, taskXp } from './gamification';
+import { PlannerStore } from './planner-store';
+import { TaskStatus, createTask } from '../models/task.model';
 import { TERMS } from '../terminology';
 
 describe('GamificationService', () => {
   let service: GamificationService;
-  let taskService: TaskService;
+  let store: PlannerStore;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     localStorage.clear();
     TestBed.configureTestingModule({});
+    store = TestBed.inject(PlannerStore);
+    await store.init();
     service = TestBed.inject(GamificationService);
-    taskService = TestBed.inject(TaskService);
   });
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
+  const plot = () => store.categories()[0].id;
 
   it('should start at level 1 with no XP', () => {
-    const stats = service.getStats();
+    const stats = service.stats();
     expect(stats.xp).toBe(0);
     expect(stats.level).toBe(1);
     expect(stats.progress).toBe(0);
   });
 
-  it('should award XP only for archived tasks, including subtask bonus', () => {
-    const archived = new Task('Archived', 'Work', '', undefined, [
-      { id: 's1', title: 'step', completed: true },
-    ]);
-    archived.status = TaskStatus.ARCHIVED;
-    const done = new Task('Done');
-    done.status = TaskStatus.DONE;
-    taskService.addTask(archived);
-    taskService.addTask(done);
+  it('should award XP only for harvested tasks, including the step bonus', () => {
+    const a = store.addTask({ title: 'Harvested', categoryId: plot(), subtasks: [{ id: 's1', title: 'step', completed: true }] });
+    const b = store.addTask({ title: 'Done only', categoryId: plot() });
+    store.setStatus(a.id, TaskStatus.ARCHIVED);
+    store.setStatus(b.id, TaskStatus.DONE);
 
-    const stats = service.getStats();
-    expect(stats.xp).toBe(service.XP_PER_TASK + service.XP_PER_SUBTASK);
-    expect(stats.tasksCompleted).toBe(1);
+    expect(service.stats().xp).toBe(XP_RULES.perTask + XP_RULES.perSubtask);
+    expect(service.stats().tasksCompleted).toBe(1);
+    expect(service.stats().level).toBe(2);
   });
 
-  it('should reach level 2 at 100 XP', () => {
-    const t = new Task('One');
-    t.status = TaskStatus.ARCHIVED;
-    taskService.addTask(t);
-    expect(service.getStats().level).toBe(2);
+  it('should give daily repeats less base XP and habits a capped streak bonus', () => {
+    const daily = createTask({ title: 'd', categoryId: 'c', recurrence: { freq: 'daily', interval: 1 } });
+    expect(taskXp(daily)).toBe(XP_RULES.perDailyTask);
+    const habit = createTask({ title: 'h', categoryId: 'c', recurrence: { freq: 'daily', interval: 1 }, isHabit: true, streak: 100 });
+    expect(taskXp(habit)).toBe(XP_RULES.perDailyTask + XP_RULES.maxStreakBonus);
   });
 
   it('should map levels to rank titles from the terminology file', () => {

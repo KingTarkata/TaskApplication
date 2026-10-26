@@ -1,10 +1,11 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TaskService } from '../../services/task.service';
-import { CategoryService } from '../../services/category';
+import { PlannerStore } from '../../services/planner-store';
 import { GamificationService } from '../../services/gamification';
+import { UiStateService } from '../../services/ui-state';
 import { TERMS } from '../../terminology';
 import { Task, TaskStatus, SubTask } from '../../models/task.model';
+import { endOfDay } from '../../models/recurrence';
 
 // A single task card on the board; buttons and styling adapt to the task's status
 @Component({
@@ -17,25 +18,31 @@ import { Task, TaskStatus, SubTask } from '../../models/task.model';
 export class TaskCard {
   @Input({ required: true }) task!: Task;
 
+  private store = inject(PlannerStore);
+  private ui = inject(UiStateService);
+  gameService = inject(GamificationService);
   eTaskStatus = TaskStatus;
   t = TERMS;
 
-  constructor(
-    public taskService: TaskService,
-    public categoryService: CategoryService,
-    public gameService: GamificationService
-  ) {}
+  // Whether the step checklist is expanded
+  showSteps = false;
 
   get isDone(): boolean {
     return this.task.status === TaskStatus.DONE;
   }
 
-  get colorClass(): string {
-    return this.categoryService.getCategoryColor(this.task.type);
+  get category() {
+    return this.store.categoryFor(this.task);
   }
 
-  // Whether the step checklist is expanded
-  showSteps = false;
+  get colorClass(): string {
+    return this.category.colorClass;
+  }
+
+  get repeatLabel(): string {
+    const r = this.task.recurrence;
+    return r ? TERMS.recurrence.describe(r.freq, r.interval) : '';
+  }
 
   get completedSteps(): number {
     return this.task.subtasks.filter((s) => s.completed).length;
@@ -43,31 +50,29 @@ export class TaskCard {
 
   // Progress marker for task based on completed SubTasks
   getProgress(): number {
-    if (!this.task.subtasks || this.task.subtasks.length === 0) return 0;
-    const done = this.task.subtasks.filter((t) => t.completed).length;
-    return Math.round((done / this.task.subtasks.length) * 100);
+    if (this.task.subtasks.length === 0) return 0;
+    return Math.round((this.completedSteps / this.task.subtasks.length) * 100);
   }
 
   toggleSubtask(subtask: SubTask) {
-    subtask.completed = !subtask.completed;
-    this.taskService.saveToStorage();
+    this.store.toggleSubtask(this.task.id, subtask.id);
   }
 
   deleteTask() {
     if (confirm(TERMS.card.confirmDelete(this.task.title))) {
-      this.taskService.removeTask(this.task.id);
+      this.store.removeTask(this.task.id);
     }
   }
 
   updateStatus(newStatus: TaskStatus) {
-    this.task.status = newStatus;
-    this.taskService.saveToStorage();
+    this.store.setStatus(this.task.id, newStatus);
   }
 
-  // Make due date text red if overdue
+  // Overdue = past the due time (habits get until the end of the day)
   isOverdue(): boolean {
     if (!this.task.dueDate || this.isDone) return false;
-    return new Date() > this.task.dueDate;
+    const limit = this.task.isHabit ? endOfDay(this.task.dueDate) : this.task.dueDate;
+    return new Date() > limit;
   }
 
   // How soon the chore is due, for the due-date chip
@@ -83,6 +88,6 @@ export class TaskCard {
   }
 
   onEdit() {
-    this.taskService.setTaskToEdit(this.task);
+    this.ui.editTask(this.task);
   }
 }

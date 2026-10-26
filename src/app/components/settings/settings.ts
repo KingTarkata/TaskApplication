@@ -1,9 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TaskService } from '../../services/task.service';
-import { CategoryService } from '../../services/category';
-import { GamificationService } from '../../services/gamification';
-import { StorageService, STORAGE_KEYS } from '../../services/storage';
+import { PlannerStore } from '../../services/planner-store';
+import { serializeAppData } from '../../models/app-data';
 import { TERMS } from '../../terminology';
 
 @Component({
@@ -15,37 +13,13 @@ import { TERMS } from '../../terminology';
 })
 export class SettingsComponent {
   t = TERMS;
+  private store = inject(PlannerStore);
 
-  constructor(
-    private taskService: TaskService,
-    private categoryService: CategoryService,
-    private gameService: GamificationService,
-    private storage: StorageService
-  ) {}
-
-  // 1. Export data as JSON file for user to download, including tasks, categories, profile details, and current version and date.
-
+  // Export everything as a versioned JSON backup file
   downloadData() {
-    const stats = this.gameService.getStats();
+    const backup = { ...serializeAppData(this.store.snapshot()), exportedAt: new Date().toISOString() };
+    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
 
-    // Bundle data
-    const dataPackage = {
-      tasks: this.taskService.tasks,
-      categories: this.categoryService.categories,
-      profile: {
-        codename: this.gameService.displayName,
-        totalXp: stats.xp,
-        level: stats.level,
-      },
-      exportedAt: new Date().toISOString(),
-      version: '1.1',
-    };
-
-    // Create file
-    const jsonString = JSON.stringify(dataPackage, null, 2); // Pretty print
-    const blob = new Blob([jsonString], { type: 'application/json' });
-
-    // Download JSON file
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -57,12 +31,11 @@ export class SettingsComponent {
     setTimeout(() => window.URL.revokeObjectURL(url), 1000);
   }
 
-  // 2. Import JSON data
-
   triggerImport() {
     document.getElementById('importFile')?.click();
   }
 
+  // Restore from a backup file (current or older Directive Zero format)
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
@@ -71,49 +44,22 @@ export class SettingsComponent {
     if (!file) return;
 
     const reader = new FileReader();
-
-    reader.onload = () => {
+    reader.onload = async () => {
+      let data: unknown;
       try {
-        const data = JSON.parse(reader.result as string);
-
-        // Validate data
-        if (!this.isValidBackup(data)) {
-          alert(TERMS.settings.invalidFile);
-          return;
-        }
-
-        // Confirm import
-        if (confirm(TERMS.settings.confirmImport)) {
-          this.performSystemRestore(data);
-        }
+        data = JSON.parse(reader.result as string);
       } catch (err) {
         alert(TERMS.settings.parseError);
+        return;
+      }
+      if (!confirm(TERMS.settings.confirmImport)) return;
+      try {
+        await this.store.restore(data);
+      } catch (err) {
         console.error(err);
+        alert(TERMS.settings.invalidFile);
       }
     };
-
     reader.readAsText(file);
-  }
-
-  // Check the file has the shape this app exports before overwriting anything
-  private isValidBackup(data: any): boolean {
-    return (
-      data &&
-      Array.isArray(data.tasks) &&
-      Array.isArray(data.categories) &&
-      data.categories.length > 0 &&
-      data.tasks.every((t: any) => t && typeof t.id === 'string' && typeof t.title === 'string') &&
-      data.categories.every((c: any) => c && typeof c.id === 'string' && typeof c.name === 'string')
-    );
-  }
-
-  // Overwrite stored data with the backup, then reload so every service picks it up
-  private performSystemRestore(data: any) {
-    this.storage.setJson(STORAGE_KEYS.tasks, data.tasks);
-    this.storage.setJson(STORAGE_KEYS.categories, data.categories);
-    if (data.profile && data.profile.codename) {
-      this.storage.setString(STORAGE_KEYS.codename, data.profile.codename);
-    }
-    location.reload();
   }
 }

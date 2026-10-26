@@ -1,22 +1,30 @@
 import {
   ApplicationConfig,
+  inject,
+  provideAppInitializer,
   provideBrowserGlobalErrorListeners,
   provideZoneChangeDetection,
   isDevMode,
 } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { provideServiceWorker } from '@angular/service-worker';
 
 import { routes } from './app.routes';
+import { DATA_REPOSITORY } from './data/data-repository';
+import { LocalRepository } from './data/local-repository';
+import { PlannerStore } from './services/planner-store';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
-    provideRouter(routes),
+    provideRouter(routes, withComponentInputBinding()),
     provideServiceWorker('ngsw-worker.js', {
       enabled: !isDevMode(),
       registrationStrategy: 'registerWhenStable:30000',
     }),
+    // Data lives on this device for now; a synced repository can replace this later
+    { provide: DATA_REPOSITORY, useExisting: LocalRepository },
+    provideAppInitializer(() => inject(PlannerStore).init()),
   ],
 };

@@ -45,3 +45,31 @@
   color: var(--hs-sage);
   background: color-mix(in srgb, var(--hs-sage) 15%, transparent);
 }
+
+.repeat-panel {
+  padding: 0.75rem;
+  border-radius: var(--hs-radius-sm);
+  background: var(--hs-surface-2);
+}
+
+.plot-dot {
+  width: 0.8rem;
+  height: 0.8rem;
+  border-radius: 50%;
+  background: var(--c);
+  flex-shrink: 0;
+}
+
+.plot-name {
+  border: 0;
+  background: transparent;
+  color: var(--hs-text);
+  font-weight: 700;
+  min-width: 0;
+  padding: 0.15rem 0.3rem;
+  border-radius: 6px;
+}
+.plot-name:focus {
+  outline: none;
+  background: var(--hs-surface);
+}

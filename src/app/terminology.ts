@@ -108,6 +108,38 @@ export const TERMS = {
     cancel: 'Cancel',
     create: 'Plant',
     update: 'Save Chore',
+    repeat: 'Repeats',
+    repeatNone: "Doesn't repeat",
+    every: 'Every',
+    freq: { daily: 'Daily', weekly: 'Weekly', monthly: 'Monthly' } as Record<string, string>,
+    units: {
+      daily: ['day', 'days'],
+      weekly: ['week', 'weeks'],
+      monthly: ['month', 'months'],
+    } as Record<string, [string, string]>,
+    habit: 'Track as a habit',
+    habitHint: 'Finish on time to grow a streak. Streaks earn bonus XP.',
+    reminder: 'Remind me',
+    reminderOptions: [
+      { value: null, label: 'No reminder' },
+      { value: 0, label: 'At the due time' },
+      { value: 15, label: '15 minutes before' },
+      { value: 60, label: '1 hour before' },
+      { value: 1440, label: '1 day before' },
+    ] as { value: number | null; label: string }[],
+    reminderNeedsDate: 'Set a "Ready By" time to get a reminder.',
+    more: 'More options',
+  },
+
+  recurrence: {
+    describe: (freq: string, interval: number) => {
+      const n = Math.max(1, interval || 1);
+      if (n === 1) return ({ daily: 'Daily', weekly: 'Weekly', monthly: 'Monthly' } as Record<string, string>)[freq] ?? '';
+      const unit = ({ daily: 'days', weekly: 'weeks', monthly: 'months' } as Record<string, string>)[freq] ?? '';
+      return `Every ${n} ${unit}`;
+    },
+    streak: (n: number) => `${n} streak`,
+    streakTitle: (n: number) => `Current streak: ${n} on-time in a row`,
   },
 
   categories: {
@@ -115,6 +147,12 @@ export const TERMS = {
     namePlaceholder: 'New plot name',
     add: 'Add',
     back: 'Back to Chore',
+    unknown: 'Unsorted',
+    rename: 'Rename',
+    confirmDelete: (name: string, count: number, fallback: string) =>
+      count > 0
+        ? `Delete the "${name}" plot? Its ${count} chore${count === 1 ? '' : 's'} will move to "${fallback}".`
+        : `Delete the "${name}" plot?`,
     // Seeded on first run only; existing users keep their own categories
     defaults: [
       { id: '1', name: 'Home', colorClass: 'success' },

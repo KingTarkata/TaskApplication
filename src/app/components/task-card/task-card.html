@@ -5,8 +5,6 @@
     <div class="d-flex flex-shrink-0 card-actions">
       <button
         class="icon-action"
-        data-bs-toggle="modal"
-        data-bs-target="#addTaskModal"
         (click)="onEdit()"
         [title]="t.card.edit"
         [attr.aria-label]="t.card.editLabel"
@@ -27,7 +25,17 @@
 
   <!-- Chips: plot, due date, steps -->
   <div class="d-flex flex-wrap gap-1 mt-2">
-    <span class="chip chip-dot" [style.--c]="'var(--bs-' + colorClass + ')'">{{ task.type }}</span>
+    <span class="chip chip-dot" [style.--c]="'var(--bs-' + colorClass + ')'">{{ category.name }}</span>
+
+    @if (task.recurrence) {
+    <span class="chip" [title]="repeatLabel"><i class="bi bi-arrow-repeat"></i>{{ repeatLabel }}</span>
+    }
+
+    @if (task.isHabit && (task.streak ?? 0) > 0) {
+    <span class="chip" style="--c: var(--hs-honey)" [title]="t.recurrence.streakTitle(task.streak ?? 0)">
+      <i class="bi bi-fire"></i>{{ t.recurrence.streak(task.streak ?? 0) }}
+    </span>
+    }
 
     @if (task.dueDate && !isDone) {
     @let due = dueState();

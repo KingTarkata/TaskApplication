@@ -1,4 +1,4 @@
-@let stats = gameService.getStats();
+@let stats = gameService.stats();
 <header class="d-flex flex-wrap align-items-center gap-2 gap-md-3 mb-3 mb-md-4">
   <!-- Brand -->
   <a class="brand d-flex align-items-center gap-2 text-decoration-none me-md-2" href="/" (click)="$event.preventDefault()">
@@ -71,16 +71,14 @@
         <span class="level-ring-inner">{{ stats.level }}</span>
       </span>
       <span class="d-none d-md-flex flex-column text-start lh-sm pe-1">
-        <span class="fw-bold text-truncate" style="max-width: 9rem">{{ gameService.displayName }}</span>
+        <span class="fw-bold text-truncate" style="max-width: 9rem">{{ gameService.displayName() }}</span>
         <small class="text-muted">{{ gameService.getTitle(stats.level) }}</small>
       </span>
     </button>
 
     <button
       class="btn btn-success d-none d-md-inline-flex align-items-center gap-2"
-      data-bs-toggle="modal"
-      data-bs-target="#addTaskModal"
-      (click)="taskService.setTaskToEdit(null)"
+      (click)="ui.newTask()"
     >
       <i class="bi {{ t.icons.newTask }}"></i>{{ t.header.newTask }}
     </button>
@@ -90,9 +88,7 @@
 <!-- Floating "plant" button on phones -->
 <button
   class="btn btn-success fab d-md-none d-flex align-items-center justify-content-center"
-  data-bs-toggle="modal"
-  data-bs-target="#addTaskModal"
-  (click)="taskService.setTaskToEdit(null)"
+  (click)="ui.newTask()"
   [attr.aria-label]="t.header.newTask"
 >
   <i class="bi {{ t.icons.newTask }}"></i>

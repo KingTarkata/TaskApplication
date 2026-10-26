@@ -25,7 +25,7 @@
             id="taskTitle"
             type="text"
             class="form-control form-control-lg"
-            [(ngModel)]="newTaskTitle"
+            [(ngModel)]="title"
             [placeholder]="t.taskForm.titlePlaceholder"
           />
         </div>
@@ -38,15 +38,15 @@
             </button>
           </div>
           <div class="d-flex flex-wrap gap-2" role="radiogroup" [attr.aria-label]="t.taskForm.category">
-            @for (cat of categoryService.categories; track cat.id) {
+            @for (cat of store.categories(); track cat.id) {
             <button
               type="button"
               role="radio"
               class="chip chip-dot chip-select"
-              [class.chip-solid]="newTaskType === cat.name"
-              [attr.aria-checked]="newTaskType === cat.name"
+              [class.chip-solid]="categoryId === cat.id"
+              [attr.aria-checked]="categoryId === cat.id"
               [style.--c]="'var(--bs-' + cat.colorClass + ')'"
-              (click)="newTaskType = cat.name"
+              (click)="categoryId = cat.id"
             >
               {{ cat.name }}
             </button>
@@ -54,25 +54,68 @@
           </div>
         </div>
 
+        <div class="row g-3 mb-3">
+          <div class="col-sm-7">
+            <label class="form-label" for="taskDue">
+              {{ t.taskForm.dueDate }} <span class="text-muted fw-normal">{{ t.taskForm.optional }}</span>
+            </label>
+            <input id="taskDue" type="datetime-local" class="form-control" [(ngModel)]="dueDate" />
+          </div>
+          <div class="col-sm-5">
+            <label class="form-label" for="taskReminder">{{ t.taskForm.reminder }}</label>
+            <select id="taskReminder" class="form-select" [(ngModel)]="reminderMinutes" [disabled]="!dueDate">
+              @for (opt of t.taskForm.reminderOptions; track opt.value) {
+              <option [ngValue]="opt.value">{{ opt.label }}</option>
+              }
+            </select>
+            @if (!dueDate) {
+            <div class="form-text">{{ t.taskForm.reminderNeedsDate }}</div>
+            }
+          </div>
+        </div>
+
+        <!-- Repeat -->
         <div class="mb-3">
-          <label class="form-label" for="taskDue">
-            {{ t.taskForm.dueDate }} <span class="text-muted fw-normal">{{ t.taskForm.optional }}</span>
-          </label>
-          <input id="taskDue" type="datetime-local" class="form-control" [(ngModel)]="newTaskDate" />
+          <span class="form-label d-block">{{ t.taskForm.repeat }}</span>
+          <div class="d-flex flex-wrap gap-2" role="radiogroup" [attr.aria-label]="t.taskForm.repeat">
+            <button type="button" role="radio" class="chip chip-select" [class.chip-solid]="!repeatFreq" style="--c: var(--hs-muted)" [attr.aria-checked]="!repeatFreq" (click)="repeatFreq = ''">
+              {{ t.taskForm.repeatNone }}
+            </button>
+            @for (freq of freqOptions; track freq) {
+            <button type="button" role="radio" class="chip chip-select" [class.chip-solid]="repeatFreq === freq" style="--c: var(--hs-sky)" [attr.aria-checked]="repeatFreq === freq" (click)="repeatFreq = freq">
+              <i class="bi bi-arrow-repeat"></i>{{ t.taskForm.freq[freq] }}
+            </button>
+            }
+          </div>
+
+          @if (repeatFreq) {
+          <div class="repeat-panel mt-2">
+            <div class="d-flex align-items-center gap-2">
+              <label for="repeatInterval" class="mb-0">{{ t.taskForm.every }}</label>
+              <input id="repeatInterval" type="number" min="1" max="365" class="form-control form-control-sm" style="width: 4.5rem" [(ngModel)]="repeatInterval" />
+              <span>{{ repeatUnit }}</span>
+            </div>
+            <div class="form-check form-switch mt-2 mb-0">
+              <input class="form-check-input" type="checkbox" role="switch" id="isHabit" [(ngModel)]="isHabit" />
+              <label class="form-check-label fw-bold" for="isHabit"><i class="bi bi-fire text-warning me-1"></i>{{ t.taskForm.habit }}</label>
+              <div class="form-text mt-0">{{ t.taskForm.habitHint }}</div>
+            </div>
+          </div>
+          }
         </div>
 
         <div class="mb-3">
           <label class="form-label" for="taskNotes">{{ t.taskForm.notes }}</label>
-          <textarea id="taskNotes" class="form-control" rows="3" [(ngModel)]="newTaskDesc"></textarea>
+          <textarea id="taskNotes" class="form-control" rows="2" [(ngModel)]="description"></textarea>
         </div>
 
         <div>
           <label class="form-label" for="newStep">{{ t.taskForm.subtasks }}</label>
-          @if (tempSubtasks.length > 0) {
+          @if (subtasks.length > 0) {
           <ul class="step-list list-unstyled mb-2">
-            @for (sub of tempSubtasks; track sub.id; let i = $index) {
+            @for (sub of subtasks; track sub.id; let i = $index) {
             <li class="d-flex align-items-center gap-2">
-              <i class="bi bi-circle text-muted small"></i>
+              <i class="bi text-muted small" [class.bi-check-circle-fill]="sub.completed" [class.bi-circle]="!sub.completed"></i>
               <span class="flex-grow-1 text-break">{{ sub.title }}</span>
               <button type="button" class="icon-action danger" (click)="removeSubtask(i)" [attr.aria-label]="t.card.delete">
                 <i class="bi bi-x-lg"></i>
@@ -96,17 +139,25 @@
           </div>
         </div>
         } @else {
-        <!-- Plot manager -->
+        <!-- Plot manager: tap a name to rename it -->
         <ul class="list-unstyled mb-3">
-          @for (cat of categoryService.categories; track cat.id) {
+          @for (cat of store.categories(); track cat.id) {
           <li class="plot-row d-flex align-items-center gap-2">
-            <span class="chip chip-dot" [style.--c]="'var(--bs-' + cat.colorClass + ')'">{{ cat.name }}</span>
-            <span class="flex-grow-1"></span>
+            <span class="plot-dot" [style.--c]="'var(--bs-' + cat.colorClass + ')'"></span>
+            <input
+              type="text"
+              class="plot-name flex-grow-1"
+              [value]="cat.name"
+              (change)="renameCategory(cat, $event)"
+              (keyup.enter)="$any($event.target).blur()"
+              [attr.aria-label]="t.categories.rename + ' ' + cat.name"
+            />
+            <small class="text-muted">{{ store.countInCategory(cat.id) }}</small>
             <button
               type="button"
               class="icon-action danger"
-              (click)="deleteCategory(cat.id)"
-              [disabled]="categoryService.categories.length <= 1"
+              (click)="deleteCategory(cat)"
+              [disabled]="store.categories().length <= 1"
               [attr.aria-label]="t.card.delete + ' ' + cat.name"
             >
               <i class="bi bi-trash3"></i>
@@ -130,7 +181,7 @@
           </button>
         </div>
         <div class="d-flex flex-wrap gap-2">
-          @for (color of categoryService.availableColors; track color.value) {
+          @for (color of colorOptions; track color.value) {
           <button
             type="button"
             class="swatch"
@@ -153,7 +204,7 @@
           type="button"
           class="btn btn-success px-4"
           data-bs-dismiss="modal"
-          [disabled]="!newTaskTitle.trim()"
+          [disabled]="!title.trim()"
           (click)="saveTask()"
         >
           {{ isEditing ? t.taskForm.update : t.taskForm.create }}
@@ -176,23 +227,26 @@
 
       <div class="modal-body">
         <ul class="list-unstyled mb-0">
-          @for (task of getTasksByStatus(eTaskStatus.ARCHIVED); track task.id) {
+          @for (task of harvested(); track task.id) {
           <li class="harvest-row d-flex align-items-center gap-3">
             <span class="harvest-icon"><i class="bi bi-check-lg"></i></span>
             <div class="flex-grow-1" style="min-width: 0">
               <div class="fw-bold text-truncate">{{ task.title }}</div>
               <div class="d-flex flex-wrap align-items-center gap-2 mt-1">
-                <span class="chip chip-dot" [style.--c]="'var(--bs-' + categoryService.getCategoryColor(task.type) + ')'">{{ task.type }}</span>
+                <span class="chip chip-dot" [style.--c]="'var(--bs-' + categoryFor(task).colorClass + ')'">{{ categoryFor(task).name }}</span>
+                @if (task.harvestedAt) {
+                <small class="text-muted">{{ task.harvestedAt | date : 'MMM d' }}</small>
+                }
                 @if (task.subtasks.length > 0) {
                 <small class="text-muted"><i class="bi {{ t.icons.subtaskDone }} me-1"></i>{{ task.subtasks.length }} {{ t.card.steps }}</small>
                 }
-                @if (task.description) {
-                <small class="text-muted text-truncate">{{ task.description }}</small>
+                @if (task.isHabit && task.streak) {
+                <small class="text-muted"><i class="bi bi-fire me-1"></i>{{ t.recurrence.streak(task.streak) }}</small>
                 }
               </div>
             </div>
             <div class="d-flex gap-1 flex-shrink-0">
-              <button class="btn btn-sm btn-soft" (click)="updateStatus(task, eTaskStatus.TODO)" [title]="t.archive.restoreTitle">
+              <button class="btn btn-sm btn-soft" (click)="replant(task)" [title]="t.archive.restoreTitle">
                 <i class="bi bi-arrow-counterclockwise me-1"></i>{{ t.archive.restore }}
               </button>
               <button class="icon-action danger" (click)="deleteTask(task)" [title]="t.archive.deleteTitle" [attr.aria-label]="t.archive.deleteTitle">

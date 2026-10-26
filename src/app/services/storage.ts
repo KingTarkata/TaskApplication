@@ -1,11 +1,16 @@
 import { Injectable } from '@angular/core';
 
-// Central list of every key the app persists, so backup/restore and future storage backends stay in sync
+// Central list of every key the app persists on this device
 export const STORAGE_KEYS = {
-  tasks: 'directive_zero_tasks',
-  categories: 'directive_zero_categories',
-  codename: 'directive_zero_codename',
+  // All app data, as one versioned blob (see models/app-data.ts)
+  data: 'hearthstead_data',
+  // Device-only preferences
   theme: 'theme',
+  reminders: 'hearthstead_reminders',
+  // v1 keys (Directive Zero era); read once for migration and kept as a fallback
+  legacyTasks: 'directive_zero_tasks',
+  legacyCategories: 'directive_zero_categories',
+  legacyCodename: 'directive_zero_codename',
 } as const;
 
 @Injectable({

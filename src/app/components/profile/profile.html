@@ -1,4 +1,4 @@
-<div class="modal fade" id="profileModal" tabindex="-1" aria-hidden="true" (shown.bs.modal)="refreshStats()" [attr.aria-label]="t.header.profileTitle">
+<div class="modal fade" id="profileModal" tabindex="-1" aria-hidden="true" [attr.aria-label]="t.header.profileTitle">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content overflow-hidden">
 
@@ -17,7 +17,7 @@
         <input
           type="text"
           class="name-input font-display"
-          [value]="gameService.displayName"
+          [value]="gameService.displayName()"
           (input)="onNameChange($event)"
           [placeholder]="t.profile.namePlaceholder"
           [attr.aria-label]="t.profile.namePlaceholder"

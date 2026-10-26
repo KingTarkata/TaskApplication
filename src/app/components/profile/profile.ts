@@ -1,31 +1,25 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GamificationService, RankStats } from '../../services/gamification';
 import { TERMS } from '../../terminology';
 
+// Profile modal: name and current stats
 @Component({
   selector: 'app-profile',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './profile.html',
-  styleUrl: './profile.css'
+  styleUrl: './profile.css',
 })
 export class ProfileComponent {
   t = TERMS;
-  
-// Handles "Profile" modal, including user name and current stats
+  gameService = inject(GamificationService);
 
-  stats!: RankStats; 
-
-  constructor(public gameService: GamificationService) {
-    this.refreshStats();
-  }
-  
-  onNameChange(event: any) {
-    this.gameService.updateName(event.target.value);
+  get stats(): RankStats {
+    return this.gameService.stats();
   }
 
-  refreshStats() {
-    this.stats = this.gameService.getStats();
+  onNameChange(event: Event) {
+    this.gameService.updateName((event.target as HTMLInputElement).value);
   }
 }

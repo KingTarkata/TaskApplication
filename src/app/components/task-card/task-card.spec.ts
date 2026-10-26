@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TaskCard } from './task-card';
-import { Task, TaskStatus } from '../../models/task.model';
+import { TaskStatus, createTask } from '../../models/task.model';
 
 describe('TaskCard', () => {
   let component: TaskCard;
@@ -15,12 +15,13 @@ describe('TaskCard', () => {
 
     fixture = TestBed.createComponent(TaskCard);
     component = fixture.componentInstance;
-    fixture.componentRef.setInput('task', new Task('Test task'));
+    fixture.componentRef.setInput('task', createTask({ title: 'Test task', categoryId: '1' }));
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should create and show the plot name', () => {
     expect(component).toBeTruthy();
+    expect(fixture.nativeElement.textContent).toContain(component.category.name);
   });
 
   it('should calculate subtask progress', () => {
@@ -36,5 +37,10 @@ describe('TaskCard', () => {
     expect(component.isOverdue()).toBeTrue();
     component.task.status = TaskStatus.DONE;
     expect(component.isOverdue()).toBeFalse();
+  });
+
+  it('should describe repeating chores', () => {
+    component.task.recurrence = { freq: 'weekly', interval: 2 };
+    expect(component.repeatLabel).toBe('Every 2 weeks');
   });
 });

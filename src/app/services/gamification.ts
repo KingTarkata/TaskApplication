@@ -1,7 +1,6 @@
-import { Injectable } from '@angular/core';
-import { TaskService } from './task.service';
-import { TaskStatus, Task } from '../models/task.model';
-import { StorageService, STORAGE_KEYS } from './storage';
+import { Injectable, computed, inject } from '@angular/core';
+import { PlannerStore } from './planner-store';
+import { Task, TaskStatus } from '../models/task.model';
 import { TERMS } from '../terminology';
 
 export interface RankStats {
@@ -12,70 +11,57 @@ export interface RankStats {
   tasksCompleted: number;
 }
 
+// Configurable XP amounts and level "difficulty"
+export const XP_RULES = {
+  perTask: 100,
+  perDailyTask: 50, // daily repeats would inflate levels at full value
+  perSubtask: 20,
+  perStreakDay: 5, // habit bonus per streak count...
+  maxStreakBonus: 50, // ...capped here
+  levelConstant: 0.1,
+};
+
+/** XP a task earns when harvested. */
+export function taskXp(task: Task): number {
+  const base = task.recurrence?.freq === 'daily' ? XP_RULES.perDailyTask : XP_RULES.perTask;
+  const steps = (task.subtasks?.length ?? 0) * XP_RULES.perSubtask;
+  const streak = task.isHabit
+    ? Math.min((task.streak ?? 0) * XP_RULES.perStreakDay, XP_RULES.maxStreakBonus)
+    : 0;
+  return base + steps + streak;
+}
+
+/** Level math: level = floor(k * sqrt(xp)) + 1 */
+export function statsFor(harvested: Task[]): RankStats {
+  const xp = harvested.reduce((total, task) => total + taskXp(task), 0);
+  const k = XP_RULES.levelConstant;
+  const level = Math.floor(k * Math.sqrt(xp)) + 1;
+  const currentLevelBaseXp = Math.pow((level - 1) / k, 2);
+  const nextLevelBaseXp = Math.pow(level / k, 2);
+  const range = nextLevelBaseXp - currentLevelBaseXp;
+  const progress = range > 0 ? Math.round(((xp - currentLevelBaseXp) / range) * 100) : 0;
+  return { xp, level, progress, nextLevelXp: Math.round(nextLevelBaseXp), tasksCompleted: harvested.length };
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class GamificationService {
-  // Configurable XP amounts and level increase "difficulty"
-  public readonly XP_PER_TASK = 100;
-  public readonly XP_PER_SUBTASK = 20;
+  private store = inject(PlannerStore);
 
-  private readonly LEVEL_CONSTANT = 0.1;
+  readonly harvested = computed(() => this.store.tasks().filter((t) => t.status === TaskStatus.ARCHIVED));
 
-  public displayName: string = TERMS.profile.defaultName;
+  /** Stats for everything harvested on this homestead. */
+  readonly stats = computed(() => statsFor(this.harvested()));
 
-  constructor(private taskService: TaskService, private storage: StorageService) {
-    this.loadProfile();
-  }
-
-  // Load existing profile if one exists
-  private loadProfile() {
-    const savedName = this.storage.getString(STORAGE_KEYS.codename);
-    if (savedName) {
-      this.displayName = savedName;
-    }
-  }
+  readonly displayName = computed(() => this.store.profile().displayName);
 
   updateName(newName: string) {
-    this.displayName = newName;
-    this.storage.setString(STORAGE_KEYS.codename, newName);
+    this.store.updateProfile({ displayName: newName });
   }
 
-  // Calculate total task XP
   getTaskPotentialXp(task: Task): number {
-    const subtaskCount = task.subtasks ? task.subtasks.length : 0;
-    return this.XP_PER_TASK + subtaskCount * this.XP_PER_SUBTASK;
-  }
-
-  getStats(): RankStats {
-    const archivedTasks = this.taskService.tasks.filter((t) => t.status === TaskStatus.ARCHIVED);
-    const count = archivedTasks.length;
-
-    // Sum variable XP (base + subtask bonus) across archived tasks
-    const xp = archivedTasks.reduce((total, task) => total + this.getTaskPotentialXp(task), 0);
-
-    // Calculate Level
-    const level = Math.floor(this.LEVEL_CONSTANT * Math.sqrt(xp)) + 1;
-
-    // Calculate Progress to next level
-    const currentLevelBaseXp = Math.pow((level - 1) / this.LEVEL_CONSTANT, 2);
-    const nextLevelBaseXp = Math.pow(level / this.LEVEL_CONSTANT, 2);
-
-    const range = nextLevelBaseXp - currentLevelBaseXp;
-    const gained = xp - currentLevelBaseXp;
-
-    let progress = 0;
-    if (range > 0) {
-      progress = Math.round((gained / range) * 100);
-    }
-
-    return {
-      xp,
-      level,
-      progress,
-      nextLevelXp: Math.round(nextLevelBaseXp),
-      tasksCompleted: count,
-    };
+    return taskXp(task);
   }
 
   // Give user titles based on level
