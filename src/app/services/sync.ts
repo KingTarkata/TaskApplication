@@ -1,6 +1,7 @@
 import { Injectable, NgZone, computed, inject, signal } from '@angular/core';
 import { PlannerStore } from './planner-store';
 import { StorageService, STORAGE_KEYS } from './storage';
+import { Capacitor } from '@capacitor/core';
 import { firebaseEnabled } from '../firebase/firebase-config';
 import type { AuthUser, FirebaseRuntime } from '../firebase/firebase-runtime';
 import { TERMS } from '../terminology';
@@ -25,6 +26,8 @@ export class SyncService {
   private zone = inject(NgZone);
 
   readonly enabled = firebaseEnabled;
+  /** Google sign-in needs a native plugin inside the Android/iOS app; email works everywhere. */
+  readonly googleAvailable = !Capacitor.isNativePlatform();
   readonly status = signal<SyncStatus>(firebaseEnabled ? 'starting' : 'disabled');
   readonly user = signal<AuthUser | null>(null);
   readonly busy = signal(false);

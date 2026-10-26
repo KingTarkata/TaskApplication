@@ -39,6 +39,7 @@ import {
   writeBatch,
 } from 'firebase/firestore';
 import { Subject } from 'rxjs';
+import { Capacitor } from '@capacitor/core';
 import { EMULATOR_HOST, EMULATOR_PORTS, firebaseConfig, useEmulators } from './firebase-config';
 import type { DataRepository } from '../data/data-repository';
 import { AppData, DATA_VERSION, Profile, deserializeTask, migrate, serializeTask } from '../models/app-data';
@@ -58,9 +59,11 @@ export class FirebaseRuntime {
 
   constructor() {
     const app = initializeApp(firebaseConfig);
+    // Inside the native app, the popup/redirect helper can hang the WebView, and Google sign-in
+    // needs a native plugin there; email sign-in works everywhere
     this.auth = initializeAuth(app, {
       persistence: [indexedDBLocalPersistence, browserLocalPersistence],
-      popupRedirectResolver: browserPopupRedirectResolver,
+      ...(Capacitor.isNativePlatform() ? {} : { popupRedirectResolver: browserPopupRedirectResolver }),
     });
     // Offline-first: data is cached on the device and writes queue until back online
     this.db = initializeFirestore(app, {

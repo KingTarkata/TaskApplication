@@ -27,7 +27,15 @@
               <i class="bi bi-bell me-1"></i>{{ t.reminders.toggle }}
             </label>
           </div>
-          <small class="d-block text-muted">{{ t.reminders.hint }} {{ t.reminders.limit }}</small>
+          <small class="d-block text-muted">
+            {{ t.reminders.hint }} {{ reminders.isNative ? t.reminders.limitNative : t.reminders.limit }}
+          </small>
+          @if (reminders.enabled() && reminders.exactAllowed() === false) {
+          <div class="note mt-2 d-flex align-items-center gap-2">
+            <small class="flex-grow-1">{{ t.reminders.exactHint }}</small>
+            <button type="button" class="btn btn-sm btn-success" (click)="reminders.allowExactAlarms()">{{ t.reminders.exactButton }}</button>
+          </div>
+          }
 
           @if (isIosBrowser) {
           <small class="d-block mt-2 note">{{ t.reminders.iosHint }}</small>

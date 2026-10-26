@@ -1,3 +1,5 @@
+import { Capacitor } from '@capacitor/core';
+
 // Firebase web app settings. These values are not secret (they identify the project; access is
 // controlled by firestore.rules), so they're safe to commit.
 //
@@ -12,8 +14,11 @@ export const firebaseConfig = {
   appId: '',
 };
 
+// The native app also serves from "localhost", but can't reach emulators on this computer
 const isLocalhost =
-  typeof location !== 'undefined' && ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname);
+  typeof location !== 'undefined' &&
+  ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname) &&
+  !Capacitor.isNativePlatform();
 
 /** "demo-" projects only exist in the local emulators (npm run emulators). */
 export const useEmulators = firebaseConfig.projectId.startsWith('demo-');

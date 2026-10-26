@@ -9,7 +9,10 @@
     "test": "ng test",
     "test:rules": "firebase emulators:exec --only firestore --project demo-hearthstead \"node --test firebase/rules.test.mjs\"",
     "emulators": "firebase emulators:start --only auth,firestore --project demo-hearthstead",
-    "deploy": "ng build && firebase deploy --only hosting,firestore"
+    "deploy": "ng build && firebase deploy --only hosting,firestore",
+    "cap:sync": "ng build && cap sync",
+    "android:build": "ng build && cap sync android && cd android && gradlew assembleDebug",
+    "android:open": "ng build && cap sync android && cap open android"
   },
   "prettier": {
     "printWidth": 100,
@@ -32,6 +35,11 @@
     "@angular/platform-browser": "^20.3.0",
     "@angular/router": "^20.3.0",
     "@angular/service-worker": "^20.3.0",
+    "@capacitor/android": "^8.5.3",
+    "@capacitor/app": "^8.1.2",
+    "@capacitor/core": "^8.5.3",
+    "@capacitor/ios": "^8.5.3",
+    "@capacitor/local-notifications": "^8.3.1",
     "@fontsource/fredoka": "^5.3.0",
     "@fontsource/nunito": "^5.3.0",
     "bootstrap": "^5.3.8",
@@ -45,6 +53,7 @@
     "@angular/build": "^20.3.7",
     "@angular/cli": "^20.3.7",
     "@angular/compiler-cli": "^20.3.0",
+    "@capacitor/cli": "^8.5.3",
     "@firebase/rules-unit-testing": "^5.0.2",
     "@types/jasmine": "~5.1.0",
     "firebase-tools": "^15.34.1",

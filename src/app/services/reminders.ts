@@ -6,6 +6,17 @@ import { ToastService } from './toast';
 import { UiStateService } from './ui-state';
 import { Task, TaskStatus } from '../models/task.model';
 import { TERMS } from '../terminology';
+import {
+  cancelNativeReminders,
+  isNativeApp,
+  nativePermission,
+  onNativeReminderTap,
+  requestNativePermission,
+  scheduleNativeReminders,
+  sendNativeTest,
+  exactAlarmsAllowed,
+  openExactAlarmSetting,
+} from './native-reminders';
 
 export type ReminderPermission = 'granted' | 'denied' | 'default' | 'unsupported';
 
@@ -52,6 +63,9 @@ export class ReminderService {
   private prefs = signal<ReminderPrefs>(this.loadPrefs());
   readonly enabled = computed(() => this.prefs().enabled);
   readonly permission = signal<ReminderPermission>(currentPermission());
+  /** Android: exact-time alarms allowed? (null = not applicable) */
+  readonly exactAllowed = signal<boolean | null>(null);
+  readonly isNative = isNativeApp;
 
   private timer: ReturnType<typeof setTimeout> | null = null;
   private started = false;
@@ -68,6 +82,26 @@ export class ReminderService {
   start(): void {
     if (this.started) return;
     this.started = true;
+    if (isNativeApp) {
+      nativePermission().then((p) => this.permission.set(p));
+      exactAlarmsAllowed().then((e) => this.exactAllowed.set(e));
+      // Re-check after returning from the system settings screen
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+          exactAlarmsAllowed().then((e) => this.zone.run(() => {
+            this.exactAllowed.set(e);
+            this.schedule();
+          }));
+        }
+      });
+      onNativeReminderTap((taskId) =>
+        this.zone.run(() => {
+          this.router.navigateByUrl('/week');
+          const task = taskId ? this.store.getTask(taskId) : undefined;
+          if (task) this.ui.editTask(task);
+        })
+      );
+    }
     this.zone.runOutsideAngular(() => setInterval(() => this.zone.run(() => this.check()), CHECK_EVERY_MS));
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') this.zone.run(() => this.check());
@@ -79,7 +113,9 @@ export class ReminderService {
   async setEnabled(on: boolean): Promise<void> {
     if (on && this.permission() === 'default') {
       try {
-        this.permission.set((await Notification.requestPermission()) as ReminderPermission);
+        this.permission.set(
+          isNativeApp ? await requestNativePermission() : ((await Notification.requestPermission()) as ReminderPermission)
+        );
       } catch {
         this.permission.set(currentPermission());
       }
@@ -92,6 +128,11 @@ export class ReminderService {
     }
     this.savePrefs({ enabled: on, sent });
     this.check();
+  }
+
+  /** Android: open the "Alarms & reminders" setting so reminders arrive exactly on time. */
+  async allowExactAlarms(): Promise<void> {
+    this.exactAllowed.set(await openExactAlarmSetting());
   }
 
   async sendTest(): Promise<void> {
@@ -118,6 +159,7 @@ export class ReminderService {
   private schedule(): void {
     if (this.timer) clearTimeout(this.timer);
     this.timer = null;
+    if (isNativeApp) this.scheduleNative();
     if (!this.enabled()) return;
     const now = Date.now();
     const next = this.store
@@ -134,7 +176,7 @@ export class ReminderService {
   }
 
   private fire(task: Task): void {
-    const when = task.dueDate!.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+    const when = formatTime(task.dueDate!);
     const body = TERMS.reminders.body(when);
     this.notify(task.title, body, `chore-${task.id}`);
     this.toasts.show({
@@ -151,9 +193,26 @@ export class ReminderService {
     }, 0); // stays until dismissed so it isn't missed
   }
 
+  // Native app: the OS shows reminders itself (even when closed); keep its schedule in sync, debounced
+  private nativeTimer: ReturnType<typeof setTimeout> | null = null;
+  private scheduleNative(): void {
+    if (this.nativeTimer) clearTimeout(this.nativeTimer);
+    this.nativeTimer = setTimeout(() => {
+      const work = this.enabled() && this.permission() === 'granted'
+        ? scheduleNativeReminders(this.store.tasks(), (task) => TERMS.reminders.body(formatTime(task.dueDate!)))
+        : cancelNativeReminders();
+      work.catch((err) => console.warn('Could not schedule reminders', err));
+    }, 500);
+  }
+
   /** System notification via the service worker when available (required on Android), else the page API. */
   private async notify(title: string, body: string, tag: string): Promise<void> {
     if (this.permission() !== 'granted') return;
+    if (isNativeApp) {
+      // Scheduled reminders are shown by the OS; only the test notification is sent from here
+      if (tag === 'hearthstead-test') await sendNativeTest(title, body);
+      return;
+    }
     const options: NotificationOptions & Record<string, unknown> = {
       body,
       tag,
@@ -197,4 +256,8 @@ export class ReminderService {
 
 function currentPermission(): ReminderPermission {
   return typeof Notification === 'undefined' ? 'unsupported' : (Notification.permission as ReminderPermission);
+}
+
+function formatTime(date: Date): string {
+  return date.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
 }

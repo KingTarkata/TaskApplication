@@ -1,49 +1,47 @@
-# Directive Zero — Roadmap to Web + Phone App
+# Hearthstead — Roadmap
 
 Goal: a shared planner / self-help app for two people now, robust enough to publish later.
 
-## Recommended stack
+## Stack
 
-| Concern | Choice | Why |
-| --- | --- | --- |
-| UI framework | **Keep Angular** | Existing code is Angular 20; no rewrite needed. |
-| Phone app | **Capacitor** | Wraps the same Angular build into real iOS/Android apps. One codebase for web, Android, iOS. Adds native APIs (notifications, haptics, share). |
-| Accounts + sync | **Supabase** (or Firebase) | Login, a Postgres database, and row-level security so data stays private per household. The free tier is plenty for two users. Needed for you and your wife to see the same data across devices. |
-| Offline | Local cache + sync queue | The app keeps working with no signal and syncs when it's back online. |
+| Concern | Choice |
+| --- | --- |
+| UI | Angular 20 (signals), Bootstrap 5, custom cozy theme |
+| Phones | PWA now; Capacitor native apps (Android project builds on Windows; iOS via cloud Mac) |
+| Accounts + sync | Firebase Auth + Firestore (offline cache), lazy-loaded |
+| Hosting | Firebase Hosting |
 
-Alternative to consider: **Ionic Angular** components instead of Bootstrap give a more native phone look and feel (tab bars, swipe gestures, pull-to-refresh). This can be adopted gradually.
+## Done
 
-## Phases
+- [x] Cleanup pass, tests, light/dark themes, offline fonts
+- [x] Rebrand to Hearthstead; all wording in `src/app/terminology.ts`
+- [x] Cozy UI redesign; phone tab bar; bottom-sheet dialogs; app icons
+- [x] Versioned data model with migration from Directive Zero; plots linked by id; signals store
+- [x] Repeating chores (daily/weekly/monthly) and habits with streaks + XP bonus
+- [x] Week view with today, overdue, undated, and previews of upcoming repeats
+- [x] Reminders: in-app + web notifications; native OS-scheduled reminders (fire when closed)
+- [x] Firebase sign-in, households, invite codes, live sync, security rules + tests
+- [x] Assign chores, member filter, per-person XP and household leaderboard
+- [x] Capacitor Android + iOS projects, icons, splash screens; Android build verified on emulator
 
-### Phase 1 — Foundations (no visible change)
-- [x] Centralize persistence in `StorageService` (done in cleanup)
-- [ ] Make the data layer async (`Promise`/signals) so it can be backed by a server
-- [ ] Add a schema `version` + migration step for stored data
-- [ ] Link tasks to categories by **id** rather than name (allows renaming categories)
-- [ ] Store status as stable codes (`todo`, `in_progress`…) rather than display text
-- [ ] Move state to Angular signals; add routing (Board / Archive / Profile / Settings as pages instead of modals)
+## Next (needs you)
 
-### Phase 2 — Phone app
-- [ ] Add Capacitor (`@capacitor/core`, `android`, `ios`); iOS builds require a Mac
-- [ ] Mobile navigation (bottom tab bar), swipe to change status, larger tap targets
-- [ ] Local notifications for due dates
-- [ ] App icons / splash screens
+- [ ] Create the Firebase project and deploy ([FIREBASE_SETUP.md](FIREBASE_SETUP.md))
+- [ ] Install the PWA on both phones and start a household
 
-### Phase 3 — Shared accounts
-- [ ] Supabase auth (email magic link or Google/Apple sign-in)
-- [ ] "Household" model: shared lists plus personal lists, assignee per task
-- [ ] Sync with conflict handling; existing localStorage data migrated on first sign-in
+## Next (code)
 
-### Phase 4 — Planner / self-help features (pick and choose)
-- Recurring tasks and habits with streaks
-- Calendar / week view
-- Goals that break down into tasks
-- Daily journal / mood check-in, gratitude log
-- Shared grocery / shopping lists
-- Couple stats and shared XP rewards
+- [ ] Native Google sign-in (`@capacitor-firebase/authentication`)
+- [ ] Cloud iOS builds (Codemagic or GitHub Actions) → TestFlight ([MOBILE.md](MOBILE.md))
+- [ ] Push reminders for the PWA when closed (Cloud Functions + FCM; needs Blaze plan)
+- [ ] Undo for delete/harvest; drag-and-drop between columns
+- [ ] Goals that break down into chores; journal / mood check-in; shopping lists
+- [ ] Shared vs. personal plots; privacy for personal chores
+- [ ] Account deletion + data export from the server (needed before publishing)
 
-### Before publishing publicly
-- Privacy policy, account deletion, data export (already have export)
-- Error reporting (e.g. Sentry), analytics opt-in
+## Before publishing publicly
+
+- Privacy policy, account deletion, terms
+- Error reporting (e.g. Sentry) and opt-in analytics
 - Accessibility pass, E2E tests (Playwright), CI build
-- App Store / Play Store developer accounts
+- Store listings, screenshots, release signing keys

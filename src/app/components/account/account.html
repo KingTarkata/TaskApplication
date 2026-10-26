@@ -15,7 +15,7 @@
   @case ('signed-out') {
   <p class="small text-muted mb-3">{{ t.sync.pitch }}</p>
 
-  @if (!showEmail()) {
+  @if (!showEmail() && sync.googleAvailable) {
   <div class="d-grid gap-2">
     <button type="button" class="btn btn-soft d-flex align-items-center justify-content-center gap-2" (click)="sync.signInWithGoogle()" [disabled]="sync.busy()">
       <i class="bi bi-google"></i>{{ t.sync.google }}
