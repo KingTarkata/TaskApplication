@@ -19,11 +19,6 @@ export class Header {
     public gameService: GamificationService
   ) {}
 
-  // Displays appropriate logo based on current theme
-  getLogoThemeSuffix(): string {
-    return this.themeService.isDarkMode ? 'light' : 'dark';
-  }
-
   // Search bar
   onSearch(event: Event) {
     const term = (event.target as HTMLInputElement).value;

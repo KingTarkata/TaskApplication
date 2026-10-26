@@ -1,10 +1,7 @@
 <div class="d-flex flex-column flex-lg-row justify-content-between align-items-center mb-4 gap-3">
-  <div class="d-flex align-items-center">
-    <img
-      [src]="'/logo-full-' + getLogoThemeSuffix() + '.png'"
-      [alt]="t.app.name"
-      style="height: 40px"
-    />
+  <div class="d-flex align-items-center gap-2 text-success" style="height: 40px">
+    <i class="bi {{ t.icons.logo }} fs-2"></i>
+    <span class="fs-3 fw-bold" style="color: var(--text-main); letter-spacing: -0.5px">{{ t.app.name }}</span>
   </div>
 
   <div

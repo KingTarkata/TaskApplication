@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { App } from './app';
+import { TERMS } from './terminology';
 
 describe('App', () => {
   beforeEach(async () => {
@@ -22,6 +23,7 @@ describe('App', () => {
     const headings = Array.from(compiled.querySelectorAll('app-task-board h6')).map((h) =>
       h.textContent?.trim()
     );
-    expect(headings).toEqual(['To Do', 'In Progress', 'Completed']);
+    const { todo, inProgress, done } = TERMS.board.columns;
+    expect(headings).toEqual([todo, inProgress, done]);
   });
 });
